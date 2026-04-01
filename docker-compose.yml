@@ -1,0 +1,420 @@
+version: '3.8'
+
+services:
+  # ==================== DATABASES ====================
+  auth-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  customer-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: customer_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - customer_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  staff-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: staff_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - staff_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  manager-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: manager_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - manager_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  catalog-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: catalog_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - catalog_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  book-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: book_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - book_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  cart-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: cart_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - cart_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  order-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: order_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - order_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  payment-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: payment_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - payment_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  shipping-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: shipping_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - shipping_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  review-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: review_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - review_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  recommender-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: recommender_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - recommender_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ==================== SERVICES ====================
+  auth-service:
+    build: ./services/auth-service
+    ports:
+      - "8001:8000"
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@auth-db:5432/auth_db
+      JWT_SECRET: bookstore-secret-key-change-in-production
+      DEBUG: "True"
+    restart: unless-stopped
+
+  customer-service:
+    build: ./services/customer-service
+    ports:
+      - "8002:8000"
+    depends_on:
+      customer-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@customer-db:5432/customer_db
+      CART_SERVICE_URL: http://cart-service:8000
+      DEBUG: "True"
+    restart: unless-stopped
+
+  staff-service:
+    build: ./services/staff-service
+    ports:
+      - "8003:8000"
+    depends_on:
+      staff-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@staff-db:5432/staff_db
+      DEBUG: "True"
+    restart: unless-stopped
+
+  manager-service:
+    build: ./services/manager-service
+    ports:
+      - "8004:8000"
+    depends_on:
+      manager-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@manager-db:5432/manager_db
+      ORDER_SERVICE_URL: http://order-service:8000
+      STAFF_SERVICE_URL: http://staff-service:8000
+      DEBUG: "True"
+    restart: unless-stopped
+
+  catalog-service:
+    build: ./services/catalog-service
+    ports:
+      - "8005:8000"
+    depends_on:
+      catalog-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@catalog-db:5432/catalog_db
+      DEBUG: "True"
+    restart: unless-stopped
+
+  book-service:
+    build: ./services/book-service
+    ports:
+      - "8006:8000"
+    depends_on:
+      book-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@book-db:5432/book_db
+      CATALOG_SERVICE_URL: http://catalog-service:8000
+      DEBUG: "True"
+    restart: unless-stopped
+
+  cart-service:
+    build: ./services/cart-service
+    ports:
+      - "8007:8000"
+    depends_on:
+      cart-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@cart-db:5432/cart_db
+      BOOK_SERVICE_URL: http://book-service:8000
+      DEBUG: "True"
+    restart: unless-stopped
+
+  order-service:
+    build: ./services/order-service
+    ports:
+      - "8008:8000"
+    depends_on:
+      order-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@order-db:5432/order_db
+      CART_SERVICE_URL: http://cart-service:8000
+      BOOK_SERVICE_URL: http://book-service:8000
+      DEBUG: "True"
+    restart: unless-stopped
+
+  pay-service:
+    build: ./services/pay-service
+    ports:
+      - "8009:8000"
+    depends_on:
+      payment-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@payment-db:5432/payment_db
+      ORDER_SERVICE_URL: http://order-service:8000
+      MOMO_PARTNER_CODE: MOMO
+      MOMO_ACCESS_KEY: F8BBA842ECF85
+      MOMO_SECRET_KEY: K951B6PE1waDMi640xX08PD3vg6EkVlz
+      MOMO_REDIRECT_URL: http://localhost:3000/payment/result
+      MOMO_IPN_URL: http://pay-service:8000/payments/momo/callback/
+      DEBUG: "True"
+    restart: unless-stopped
+
+  ship-service:
+    build: ./services/ship-service
+    ports:
+      - "8010:8000"
+    depends_on:
+      shipping-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@shipping-db:5432/shipping_db
+      ORDER_SERVICE_URL: http://order-service:8000
+      DEBUG: "True"
+    restart: unless-stopped
+
+  comment-rate-service:
+    build: ./services/comment-rate-service
+    ports:
+      - "8011:8000"
+    depends_on:
+      review-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@review-db:5432/review_db
+      ORDER_SERVICE_URL: http://order-service:8000
+      DEBUG: "True"
+    restart: unless-stopped
+
+  recommender-service:
+    build: ./services/recommender-service
+    ports:
+      - "8012:8000"
+    depends_on:
+      recommender-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@recommender-db:5432/recommender_db
+      BOOK_SERVICE_URL: http://book-service:8000
+      DEBUG: "True"
+    restart: unless-stopped
+
+  chatbot-service:
+    build: ./services/chatbot-service
+    ports:
+      - "8013:8000"
+    environment:
+      AI_PROVIDER: ${AI_PROVIDER:-openai}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OLLAMA_URL: http://ollama:11434
+      BOOK_SERVICE_URL: http://book-service:8000
+      ORDER_SERVICE_URL: http://order-service:8000
+      DEBUG: "True"
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  api-gateway:
+    build: ./services/api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      JWT_SECRET: bookstore-secret-key-change-in-production
+      AUTH_SERVICE_URL: http://auth-service:8000
+      CUSTOMER_SERVICE_URL: http://customer-service:8000
+      STAFF_SERVICE_URL: http://staff-service:8000
+      MANAGER_SERVICE_URL: http://manager-service:8000
+      CATALOG_SERVICE_URL: http://catalog-service:8000
+      BOOK_SERVICE_URL: http://book-service:8000
+      CART_SERVICE_URL: http://cart-service:8000
+      ORDER_SERVICE_URL: http://order-service:8000
+      PAY_SERVICE_URL: http://pay-service:8000
+      SHIP_SERVICE_URL: http://ship-service:8000
+      REVIEW_SERVICE_URL: http://comment-rate-service:8000
+      RECOMMENDER_SERVICE_URL: http://recommender-service:8000
+      CHATBOT_SERVICE_URL: http://chatbot-service:8000
+      DEBUG: "True"
+    depends_on:
+      - auth-service
+      - customer-service
+      - staff-service
+      - manager-service
+      - catalog-service
+      - book-service
+      - cart-service
+      - order-service
+      - pay-service
+      - ship-service
+      - comment-rate-service
+      - recommender-service
+      - chatbot-service
+    restart: unless-stopped
+
+  # ==================== OLLAMA ====================
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+  # ==================== FRONTEND ====================
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    environment:
+      REACT_APP_API_URL: http://localhost:8000/api
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
+
+volumes:
+  auth_db_data:
+  customer_db_data:
+  staff_db_data:
+  manager_db_data:
+  catalog_db_data:
+  book_db_data:
+  cart_db_data:
+  order_db_data:
+  payment_db_data:
+  shipping_db_data:
+  review_db_data:
+  recommender_db_data:
+  ollama_data:
