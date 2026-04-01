@@ -24,6 +24,7 @@ import Profile from './pages/Profile';
 import StaffDashboard from './pages/StaffDashboard';
 import StaffBooks from './pages/StaffBooks';
 import ManagerDashboard from './pages/ManagerDashboard';
+import ManagerStaff from './pages/ManagerStaff';
 
 // Layout wrapper for customer pages
 const CustomerLayout = ({ children }) => (
@@ -48,7 +49,7 @@ const AppRoutes = () => {
         <Route path="/staff" element={<StaffDashboard />} />
         <Route path="/staff/books" element={<StaffBooks />} />
         <Route path="/manager" element={<ManagerDashboard />} />
-        <Route path="/manager/users" element={<ManagerDashboard />} />
+        <Route path="/manager/users" element={<ManagerStaff />} />
       </Routes>
     );
   }
