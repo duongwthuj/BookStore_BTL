@@ -105,5 +105,8 @@ MOMO_REDIRECT_URL = os.environ.get('MOMO_REDIRECT_URL', 'http://localhost:8009/p
 MOMO_IPN_URL = os.environ.get('MOMO_IPN_URL', 'http://localhost:8009/payments/momo/callback/')
 MOMO_ENDPOINT = os.environ.get('MOMO_ENDPOINT', 'https://test-payment.momo.vn/v2/gateway/api/create')
 
+# Frontend base URL for redirect after payment return
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+
 # Order Service URL
 ORDER_SERVICE_URL = os.environ.get('ORDER_SERVICE_URL', 'http://localhost:8002')

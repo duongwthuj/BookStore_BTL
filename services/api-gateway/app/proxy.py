@@ -79,6 +79,7 @@ class ServiceProxy:
                     'etag',
                     'last-modified',
                     'x-request-id',
+                    'location',
                 ]
 
                 for header in headers_to_copy:
@@ -165,6 +166,7 @@ class ServiceProxy:
                     'etag',
                     'last-modified',
                     'x-request-id',
+                    'location',
                 ]
 
                 for header in headers_to_copy:

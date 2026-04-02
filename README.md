@@ -21,7 +21,7 @@ A complete e-commerce bookstore application built with microservice architecture
         ▼                     ▼                     ▼
 ┌───────────────┐   ┌───────────────┐   ┌───────────────┐
 │ Identity      │   │ Catalog       │   │ Ordering      │
-│ ─────────────│   │ ─────────────│   │ ─────────────│
+│ ─────────────-│   │ ─────────────-│   │ ─────────────-│
 │ • auth        │   │ • catalog     │   │ • cart        │
 │ • customer    │   │ • book        │   │ • order       │
 │ • staff       │   │               │   │               │
