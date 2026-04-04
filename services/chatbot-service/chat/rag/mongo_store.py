@@ -8,8 +8,17 @@ from typing import Dict, List, Optional
 from django.conf import settings
 from pymongo import MongoClient, DESCENDING
 from bson import ObjectId
+from bson.errors import InvalidId
 
 logger = logging.getLogger(__name__)
+
+
+def _to_object_id(id_str: str) -> Optional[ObjectId]:
+    """Safely convert string to ObjectId."""
+    try:
+        return ObjectId(id_str)
+    except (InvalidId, TypeError):
+        return None
 
 
 class MongoStore:
@@ -49,13 +58,13 @@ class MongoStore:
 
     def get_session(self, session_id: str) -> Optional[Dict]:
         """Get a session by ID."""
-        try:
-            doc = self.db.chat_sessions.find_one({"_id": ObjectId(session_id)})
-            if doc:
-                doc["id"] = str(doc.pop("_id"))
-            return doc
-        except Exception:
+        oid = _to_object_id(session_id)
+        if not oid:
             return None
+        doc = self.db.chat_sessions.find_one({"_id": oid})
+        if doc:
+            doc["id"] = str(doc.pop("_id"))
+        return doc
 
     def list_sessions(self, user_id: str = None, limit: int = 20) -> List[Dict]:
         """List recent chat sessions."""
@@ -75,14 +84,20 @@ class MongoStore:
 
     def update_session_title(self, session_id: str, title: str):
         """Update session title."""
+        oid = _to_object_id(session_id)
+        if not oid:
+            return
         self.db.chat_sessions.update_one(
-            {"_id": ObjectId(session_id)},
+            {"_id": oid},
             {"$set": {"title": title, "updated_at": datetime.utcnow().isoformat()}},
         )
 
     def delete_session(self, session_id: str):
         """Delete a session and its messages."""
-        self.db.chat_sessions.delete_one({"_id": ObjectId(session_id)})
+        oid = _to_object_id(session_id)
+        if not oid:
+            return
+        self.db.chat_sessions.delete_one({"_id": oid})
         self.db.chat_messages.delete_many({"session_id": session_id})
 
     # ==================== Chat Messages ====================
@@ -108,13 +123,15 @@ class MongoStore:
         result = self.db.chat_messages.insert_one(message)
 
         # Update session
-        self.db.chat_sessions.update_one(
-            {"_id": ObjectId(session_id)},
-            {
-                "$inc": {"message_count": 1},
-                "$set": {"updated_at": now},
-            },
-        )
+        oid = _to_object_id(session_id)
+        if oid:
+            self.db.chat_sessions.update_one(
+                {"_id": oid},
+                {
+                    "$inc": {"message_count": 1},
+                    "$set": {"updated_at": now},
+                },
+            )
 
         return str(result.inserted_id)
 
@@ -158,8 +175,11 @@ class MongoStore:
 
     def update_document(self, doc_id: str, update: Dict):
         """Update document metadata."""
+        oid = _to_object_id(doc_id)
+        if not oid:
+            return
         self.db.documents.update_one(
-            {"_id": ObjectId(doc_id)},
+            {"_id": oid},
             {"$set": update},
         )
 
@@ -181,9 +201,12 @@ class MongoStore:
 
     def delete_document(self, doc_id: str) -> Optional[Dict]:
         """Delete a document and return its data for cleanup."""
-        doc = self.db.documents.find_one({"_id": ObjectId(doc_id)})
+        oid = _to_object_id(doc_id)
+        if not oid:
+            return None
+        doc = self.db.documents.find_one({"_id": oid})
         if doc:
-            self.db.documents.delete_one({"_id": ObjectId(doc_id)})
+            self.db.documents.delete_one({"_id": oid})
             doc["id"] = str(doc.pop("_id"))
             return doc
         return None

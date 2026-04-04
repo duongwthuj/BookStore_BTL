@@ -110,13 +110,15 @@ def chat(request):
         context = request.data.get('context')
         result = ai_client.generate_response(message, context)
         if result['success']:
-            return Response({
+            response_data = {
                 "success": True,
                 "response": result['response'],
                 "model": result.get('model'),
                 "sources": [],
-                "session_id": session_id,
-            })
+            }
+            if session_id:
+                response_data["session_id"] = session_id
+            return Response(response_data)
         return Response(result, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
@@ -328,10 +330,9 @@ def document_detail(request, doc_id):
     vector_ids = doc.get("vector_ids", [])
     if vector_ids:
         try:
-            from qdrant_client.http.models import PointIdsList
             vector_store.client.delete(
                 collection_name=vector_store.collection_name,
-                points_selector=PointIdsList(points=vector_ids),
+                points_selector=vector_ids,
             )
         except Exception as e:
             logger.warning(f"Failed to delete vectors: {e}")

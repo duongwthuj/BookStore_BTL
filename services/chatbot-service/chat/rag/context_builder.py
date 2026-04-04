@@ -46,14 +46,17 @@ class ContextBuilder:
             context_parts.append(f"[{source_title}]\n{content}")
             current_length += len(content) + len(source_title) + 4
 
-            sources.append({
+            source_entry = {
                 "title": source_title,
                 "score": round(score, 3),
                 "source_type": metadata.get("source_type", "unknown"),
-                "book_id": metadata.get("book_id"),
-                "author": metadata.get("author"),
-                "price": metadata.get("price"),
-            })
+            }
+            # Only include optional fields if they have values
+            for key in ("book_id", "author", "price"):
+                val = metadata.get(key)
+                if val:
+                    source_entry[key] = val
+            sources.append(source_entry)
 
             total_score += score
 

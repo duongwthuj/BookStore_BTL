@@ -35,9 +35,9 @@ class GeminiClient:
         prompt = f"{self.system_prompt}\n\n"
 
         if context:
-            prompt += f"Thong tin bo sung:\n{context}\n\n"
+            prompt += f"Thông tin bổ sung:\n{context}\n\n"
 
-        prompt += f"Nguoi dung: {user_message}\nTro ly:"
+        prompt += f"Người dùng: {user_message}\nTrợ lý:"
 
         payload = {
             "contents": [

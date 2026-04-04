@@ -3,14 +3,12 @@ Embedding service using HuggingFace SentenceTransformers.
 Optimized for Vietnamese text with dangvantuan/vietnamese-document-embedding.
 """
 import logging
-from concurrent.futures import ThreadPoolExecutor
+import threading
 from typing import List
 
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
-
-_executor = ThreadPoolExecutor(max_workers=2)
 
 
 class EmbeddingService:
@@ -18,19 +16,23 @@ class EmbeddingService:
 
     def __init__(self):
         self._model = None
+        self._lock = threading.Lock()
         self.model_name = settings.EMBEDDING_MODEL
         self.dimension = settings.EMBEDDING_DIMENSION
 
     @property
     def model(self):
         if self._model is None:
-            try:
-                from sentence_transformers import SentenceTransformer
-                self._model = SentenceTransformer(self.model_name)
-                logger.info(f"Loaded embedding model: {self.model_name}")
-            except Exception as e:
-                logger.error(f"Failed to load embedding model: {e}")
-                raise
+            with self._lock:
+                # Double-check after acquiring lock
+                if self._model is None:
+                    try:
+                        from sentence_transformers import SentenceTransformer
+                        self._model = SentenceTransformer(self.model_name)
+                        logger.info(f"Loaded embedding model: {self.model_name}")
+                    except Exception as e:
+                        logger.error(f"Failed to load embedding model: {e}")
+                        raise
         return self._model
 
     def embed_text(self, text: str) -> List[float]:
