@@ -343,9 +343,19 @@ services:
       OLLAMA_URL: http://ollama:11434
       BOOK_SERVICE_URL: http://book-service:8000
       ORDER_SERVICE_URL: http://order-service:8000
+      MONGODB_URL: mongodb://mongo:mongo@mongodb:27017/chatbot_db?authSource=admin
+      QDRANT_HOST: qdrant
+      QDRANT_PORT: "6333"
+      EMBEDDING_MODEL: dangvantuan/vietnamese-document-embedding
+      RAG_TOP_K: "5"
+      RAG_SIMILARITY_THRESHOLD: "0.3"
+      CHUNK_SIZE: "512"
+      CHUNK_OVERLAP: "50"
       DEBUG: "True"
     depends_on:
       - ollama
+      - qdrant
+      - mongodb
     restart: unless-stopped
 
   api-gateway:
@@ -384,6 +394,37 @@ services:
       - chatbot-service
     restart: unless-stopped
 
+  # ==================== RAG INFRASTRUCTURE ====================
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:6333/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+      MONGO_INITDB_DATABASE: chatbot_db
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   # ==================== OLLAMA ====================
   ollama:
     image: ollama/ollama:latest
@@ -417,4 +458,6 @@ volumes:
   shipping_db_data:
   review_db_data:
   recommender_db_data:
+  qdrant_data:
+  mongodb_data:
   ollama_data:
