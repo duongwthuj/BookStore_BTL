@@ -76,20 +76,9 @@ REST_FRAMEWORK = {
     'UNAUTHENTICATED_USER': None,
 }
 
-# AI Provider settings
-AI_PROVIDER = os.environ.get('AI_PROVIDER', 'openai')  # 'openai', 'gemini' or 'ollama'
-
-# OpenAI settings
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
-OPENAI_MODEL = os.environ.get('OPENAI_MODEL', 'gpt-4o-mini')
-
 # Gemini settings
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
 GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-2.0-flash-lite')
-
-# Ollama settings (fallback)
-OLLAMA_URL = os.environ.get('OLLAMA_URL', 'http://ollama:11434')
-OLLAMA_MODEL = os.environ.get('OLLAMA_MODEL', 'llama3.2:1b')
 
 # External service URLs
 BOOK_SERVICE_URL = os.environ.get('BOOK_SERVICE_URL', 'http://book-service:8001')

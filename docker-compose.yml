@@ -340,10 +340,7 @@ services:
     ports:
       - "8013:8000"
     environment:
-      AI_PROVIDER: ${AI_PROVIDER:-openai}
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      OLLAMA_URL: http://ollama:11434
       BOOK_SERVICE_URL: http://book-service:8000
       ORDER_SERVICE_URL: http://order-service:8000
       MONGODB_URL: mongodb://mongo:mongo@mongodb:27017/chatbot_db?authSource=admin
@@ -356,7 +353,6 @@ services:
       CHUNK_OVERLAP: "50"
       DEBUG: "True"
     depends_on:
-      - ollama
       - qdrant
       - mongodb
     restart: unless-stopped
@@ -428,14 +424,6 @@ services:
       retries: 5
     restart: unless-stopped
 
-  # ==================== OLLAMA ====================
-  ollama:
-    image: ollama/ollama:latest
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    restart: unless-stopped
 
   # ==================== FRONTEND ====================
   frontend:
@@ -463,4 +451,3 @@ volumes:
   recommender_db_data:
   qdrant_data:
   mongodb_data:
-  ollama_data:

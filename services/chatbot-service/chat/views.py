@@ -3,39 +3,15 @@ Views for chatbot service with RAG integration.
 """
 import logging
 
-from django.conf import settings as django_settings
 from rest_framework import status
 from rest_framework.decorators import api_view, parser_classes
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.response import Response
 
 from .services import book_service, order_service
-from .openai_client import openai_client
 from .gemini_client import gemini_client
-from .ollama_client import ollama_client
 
 logger = logging.getLogger(__name__)
-
-
-def get_ai_response(message: str, context: str = None) -> dict:
-    """Get AI response with fallback chain: OpenAI -> Gemini -> Ollama."""
-    if django_settings.AI_PROVIDER == 'openai' and django_settings.OPENAI_API_KEY:
-        result = openai_client.generate_response(message, context)
-        if result['success']:
-            return result
-
-    if django_settings.GEMINI_API_KEY:
-        result = gemini_client.generate_response(message, context)
-        if result['success']:
-            return result
-
-    return ollama_client.generate_response(message, context)
-
-
-ai_client = type('AIClient', (), {
-    'generate_response': staticmethod(get_ai_response),
-    'health_check': ollama_client.health_check,
-})()
 
 
 def _get_rag_modules():
@@ -57,7 +33,6 @@ def chat(request):
 
     POST /chat/
     Body: {"message": "...", "session_id": "...(optional)"}
-    Response: {"success": true, "response": "...", "sources": [...], "session_id": "..."}
     """
     message = request.data.get('message', '').strip()
     if not message:
@@ -71,29 +46,20 @@ def chat(request):
     try:
         rag_service, mongo_store, _, _, _ = _get_rag_modules()
 
-        # Create session if needed
         if not session_id:
             user_id = request.headers.get('X-User-Id')
             session_id = mongo_store.create_session(user_id=user_id, title=message[:50])
 
-        # Run RAG pipeline
-        rag_result = rag_service.query(
-            user_message=message,
-            session_id=session_id,
-        )
-
-        # Generate response with RAG context
-        result = ai_client.generate_response(message, rag_result.get("context_text"))
+        rag_result = rag_service.query(user_message=message, session_id=session_id)
+        result = gemini_client.generate_response(message, rag_result.get("context_text"))
 
         if result['success']:
-            # Save interaction
             rag_service.save_interaction(
                 session_id=session_id,
                 user_message=message,
                 bot_response=result['response'],
                 sources=rag_result.get('sources'),
             )
-
             return Response({
                 "success": True,
                 "response": result['response'],
@@ -106,9 +72,8 @@ def chat(request):
 
     except Exception as e:
         logger.warning(f"RAG pipeline error, falling back to basic chat: {e}")
-        # Fallback to basic chat without RAG
         context = request.data.get('context')
-        result = ai_client.generate_response(message, context)
+        result = gemini_client.generate_response(message, context)
         if result['success']:
             response_data = {
                 "success": True,
@@ -153,13 +118,13 @@ def search_book(request):
         context = f"Không tìm thấy sách nào với từ khóa '{query}'"
         prompt = f"Thông báo không tìm thấy sách với từ khóa '{query}' và gợi ý người dùng thử từ khóa khác"
 
-    ollama_result = ai_client.generate_response(prompt, context)
+    ai_result = gemini_client.generate_response(prompt, context)
 
     return Response({
         "success": True,
         "books": books,
         "count": len(books),
-        "message": ollama_result.get('response', '') if ollama_result['success'] else None,
+        "message": ai_result.get('response', '') if ai_result['success'] else None,
     })
 
 
@@ -180,14 +145,14 @@ def order_status(request, order_id):
 
     if not result['success']:
         if result['error'] == "Order not found":
-            ollama_result = ai_client.generate_response(
+            ai_result = gemini_client.generate_response(
                 f"Thông báo không tìm thấy đơn hàng với mã {order_id}",
                 "Đơn hàng không tồn tại trong hệ thống",
             )
             return Response({
                 "success": False,
                 "error": "Order not found",
-                "message": ollama_result.get('response', '') if ollama_result['success'] else None,
+                "message": ai_result.get('response', '') if ai_result['success'] else None,
             }, status=status.HTTP_404_NOT_FOUND)
         return Response(result, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
@@ -199,7 +164,7 @@ def order_status(request, order_id):
         f"Ngày đặt: {order.get('created_at', 'N/A')}"
     )
 
-    ollama_result = ai_client.generate_response(
+    ai_result = gemini_client.generate_response(
         f"Thông báo trạng thái đơn hàng {order_id}",
         order_info,
     )
@@ -207,7 +172,7 @@ def order_status(request, order_id):
     return Response({
         "success": True,
         "order": order,
-        "message": ollama_result.get('response', '') if ollama_result['success'] else None,
+        "message": ai_result.get('response', '') if ai_result['success'] else None,
     })
 
 
@@ -226,7 +191,6 @@ def sessions(request):
         session_list = mongo_store.list_sessions(user_id=user_id)
         return Response({"success": True, "sessions": session_list})
 
-    # POST
     user_id = request.headers.get('X-User-Id')
     title = request.data.get('title', 'Cuộc trò chuyện mới')
     session_id = mongo_store.create_session(user_id=user_id, title=title)
@@ -248,7 +212,6 @@ def session_detail(request, session_id):
         mongo_store.delete_session(session_id)
         return Response({"success": True})
 
-    # GET
     session = mongo_store.get_session(session_id)
     if not session:
         return Response(
@@ -278,7 +241,7 @@ def session_history(request, session_id):
 # ==================== DOCUMENT MANAGEMENT ====================
 
 @api_view(['GET', 'POST'])
-@parser_classes([MultiPartParser, FormParser])
+@parser_classes([JSONParser, MultiPartParser, FormParser])
 def documents(request):
     """
     GET /chat/documents/ - List knowledge base documents
@@ -291,7 +254,6 @@ def documents(request):
         docs = mongo_store.list_documents(source_type=source_type)
         return Response({"success": True, "documents": docs})
 
-    # POST - Upload document
     if 'file' in request.FILES:
         uploaded_file = request.FILES['file']
         title = request.data.get('title', uploaded_file.name)
@@ -326,7 +288,6 @@ def document_detail(request, doc_id):
             status=status.HTTP_404_NOT_FOUND,
         )
 
-    # Delete vectors
     vector_ids = doc.get("vector_ids", [])
     if vector_ids:
         try:
@@ -374,14 +335,9 @@ def rag_stats(request):
 
 @api_view(['GET'])
 def health(request):
-    """
-    Health check endpoint.
+    """Health check endpoint."""
+    gemini_ok = gemini_client.health_check()
 
-    GET /chat/health/
-    """
-    ollama_healthy = ai_client.health_check()
-
-    # Check RAG components
     rag_status = {}
     try:
         _, mongo_store, _, vector_store, embedding_service = _get_rag_modules()
@@ -391,10 +347,10 @@ def health(request):
     except Exception as e:
         rag_status["error"] = str(e)
 
-    all_healthy = ollama_healthy and rag_status.get("qdrant") == "connected"
+    all_healthy = gemini_ok and rag_status.get("qdrant") == "connected"
 
     return Response({
         "status": "healthy" if all_healthy else "degraded",
-        "ollama": "connected" if ollama_healthy else "disconnected",
+        "gemini": "configured" if gemini_ok else "not_configured",
         "rag": rag_status,
     }, status=status.HTTP_200_OK if all_healthy else status.HTTP_503_SERVICE_UNAVAILABLE)
