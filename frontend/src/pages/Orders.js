@@ -54,11 +54,11 @@ const Orders = () => {
 
   const getStatusText = (status) => {
     const statusMap = {
-      pending: 'Cho xu ly',
-      processing: 'Dang xu ly',
-      shipped: 'Dang giao hang',
-      delivered: 'Da giao hang',
-      cancelled: 'Da huy',
+      pending: 'Chờ xử lý',
+      processing: 'Đang xử lý',
+      shipped: 'Đang giao hàng',
+      delivered: 'Đã giao hàng',
+      cancelled: 'Đã huỷ',
     };
     return statusMap[status?.toLowerCase()] || status;
   };
@@ -81,7 +81,7 @@ const Orders = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Don Hang Cua Toi</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Đơn hàng của tôi</h1>
 
       {orders.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-xl shadow-md">
@@ -98,12 +98,12 @@ const Orders = () => {
               d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
             />
           </svg>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Chua co don hang nao</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Chưa có đơn hàng nào</h2>
           <p className="text-gray-500 mb-6">
-            Ban chua dat don hang nao. Hay bat dau mua sam!
+            Bạn chưa đặt đơn hàng nào. Hãy bắt đầu mua sắm!
           </p>
           <Link to="/books" className="btn-primary">
-            Xem Sach
+            Xem sách
           </Link>
         </div>
       ) : (
@@ -119,10 +119,10 @@ const Orders = () => {
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">
-                        Don hang #{order.id || order.order_number}
+                        Đơn hàng #{order.id || order.order_number}
                       </h3>
                       <p className="text-sm text-gray-500">
-                        Dat ngay {formatDate(order.created_at)}
+                        Đặt ngày {formatDate(order.created_at)}
                       </p>
                     </div>
                     <span
@@ -164,14 +164,14 @@ const Orders = () => {
                       </div>
                       <div>
                         <p className="text-sm text-gray-600">
-                          {order.items?.length || 0} san pham
+                          {order.items?.length || 0} sản phẩm
                         </p>
                       </div>
                     </div>
 
                     <div className="mt-4 sm:mt-0 flex items-center justify-between sm:justify-end sm:space-x-6">
                       <div className="text-right">
-                        <p className="text-sm text-gray-500">Tong tien</p>
+                        <p className="text-sm text-gray-500">Tổng tiền</p>
                         <p className="text-lg font-semibold text-primary-600">
                           {formatPrice(order.total || 0)}
                         </p>

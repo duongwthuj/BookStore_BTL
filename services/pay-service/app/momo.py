@@ -52,6 +52,12 @@ class MoMoClient:
         request_type = "captureWallet"
         extra_data = ""
 
+        if not self.access_key or not self.secret_key or not self.partner_code:
+            return {
+                'resultCode': -2,
+                'message': 'Missing MoMo configuration (partner/access/secret keys)'
+            }
+
         # Build raw signature string according to MoMo specification
         raw_signature = (
             f"accessKey={self.access_key}"
@@ -89,10 +95,21 @@ class MoMoClient:
                 self.endpoint,
                 json=payload,
                 headers={'Content-Type': 'application/json'},
-                timeout=30
+                timeout=10
             )
-            response.raise_for_status()
-            return response.json()
+            # MoMo may return 4xx with a JSON body; try to parse it.
+            try:
+                data = response.json()
+            except Exception:
+                data = None
+
+            if response.status_code >= 400:
+                return data or {
+                    'resultCode': -1,
+                    'message': f"MoMo HTTP {response.status_code}: {response.text[:500]}"
+                }
+
+            return data or {}
         except requests.RequestException as e:
             return {
                 'resultCode': -1,

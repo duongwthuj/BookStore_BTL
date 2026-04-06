@@ -20,7 +20,12 @@ class OrderServiceClient:
     """Client for communicating with order-service"""
 
     def __init__(self):
-        self.base_url = settings.ORDER_SERVICE_URL
+        self.base_url = settings.ORDER_SERVICE_URL.rstrip('/')
+
+    def _url(self, path: str) -> str:
+        if not path.startswith('/'):
+            path = '/' + path
+        return f"{self.base_url}{path}"
 
     def get_order(self, order_id: int) -> dict:
         """
@@ -34,7 +39,7 @@ class OrderServiceClient:
         """
         try:
             response = requests.get(
-                f"{self.base_url}/orders/{order_id}/",
+                self._url(f"/api/orders/{order_id}/"),
                 timeout=10
             )
             if response.status_code == 200:
@@ -43,31 +48,29 @@ class OrderServiceClient:
             logger.error(f"Failed to fetch order {order_id}: {e}")
         return None
 
-    def update_order_payment_status(self, order_id: int, payment_status: str, transaction_id: str = None) -> bool:
+    def update_order_status(self, order_id: int, new_status: str) -> bool:
         """
-        Update order payment status in order-service
+        Update order status in order-service.
+
+        order-service exposes: PUT /api/orders/{id}/status/ {"status": "paid"}
 
         Args:
             order_id: The order ID
-            payment_status: New payment status
-            transaction_id: Optional transaction ID for tracking
+            new_status: New order status (e.g. 'paid')
 
         Returns:
             bool: True if update successful
         """
         try:
-            payload = {'payment_status': payment_status}
-            if transaction_id:
-                payload['transaction_id'] = transaction_id
-
-            response = requests.patch(
-                f"{self.base_url}/orders/{order_id}/payment-status/",
+            payload = {'status': new_status}
+            response = requests.put(
+                self._url(f"/api/orders/{order_id}/status/"),
                 json=payload,
-                timeout=10
+                timeout=10,
             )
             return response.status_code in (200, 204)
         except requests.RequestException as e:
-            logger.error(f"Failed to update order {order_id} payment status: {e}")
+            logger.error(f"Failed to update order {order_id} status to {new_status}: {e}")
         return False
 
 
@@ -138,9 +141,6 @@ class PaymentService:
             status='pending'
         )
 
-        # Notify order-service about COD payment creation
-        self.order_client.update_order_payment_status(order_id, 'cod_pending')
-
         return payment
 
     def process_momo_callback(self, order_id: int, result_code: int, transaction_id: str) -> Payment:
@@ -168,12 +168,9 @@ class PaymentService:
             payment.status = 'success'
             payment.transaction_id = str(transaction_id)
             payment.paid_at = timezone.now()
-            self.order_client.update_order_payment_status(
-                order_id, 'paid', str(transaction_id)
-            )
+            self.order_client.update_order_status(order_id, 'paid')
         else:
             payment.status = 'failed'
-            self.order_client.update_order_payment_status(order_id, 'payment_failed')
 
         payment.save()
         return payment
@@ -202,7 +199,7 @@ class PaymentService:
         payment.save()
 
         # Notify order-service
-        self.order_client.update_order_payment_status(order_id, 'paid')
+        self.order_client.update_order_status(order_id, 'paid')
 
         return payment
 

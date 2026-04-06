@@ -66,7 +66,7 @@ const Checkout = () => {
   const validateShipping = () => {
     if (!formData.firstName || !formData.lastName || !formData.email ||
         !formData.phone || !formData.address || !formData.district || !formData.city) {
-      setError('Vui long dien day du thong tin');
+      setError('Vui lòng điền đầy đủ thông tin');
       return false;
     }
     return true;
@@ -195,7 +195,7 @@ const Checkout = () => {
       console.error('Response:', err.response);
       console.error('Response data:', err.response?.data);
       const errorData = err.response?.data;
-      let errorMsg = 'Dat hang that bai. Vui long thu lai.';
+      let errorMsg = 'Đặt hàng thất bại. Vui lòng thử lại.';
       if (errorData) {
         if (typeof errorData === 'string') {
           errorMsg = errorData;
@@ -228,10 +228,10 @@ const Checkout = () => {
   if (cartItems.length === 0 && step !== 4) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Gio hang trong</h1>
-        <p className="text-gray-500 mb-6">Them sach vao gio hang truoc khi thanh toan.</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Giỏ hàng trống</h1>
+        <p className="text-gray-500 mb-6">Thêm sách vào giỏ hàng trước khi thanh toán.</p>
         <Link to="/books" className="btn-primary">
-          Xem Sach
+          Xem sách
         </Link>
       </div>
     );
@@ -239,15 +239,15 @@ const Checkout = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Thanh Toan</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Thanh toán</h1>
 
       {/* Progress Steps */}
       <div className="mb-8">
         <div className="flex items-center justify-center">
           {[
-            { num: 1, label: 'Giao hang' },
-            { num: 2, label: 'Thanh toan' },
-            { num: 3, label: 'Xac nhan' },
+            { num: 1, label: 'Giao hàng' },
+            { num: 2, label: 'Thanh toán' },
+            { num: 3, label: 'Xác nhận' },
           ].map((s, i) => (
             <React.Fragment key={s.num}>
               <div
@@ -298,13 +298,13 @@ const Checkout = () => {
             {step === 1 && (
               <div className="bg-white rounded-xl shadow-md p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Thong Tin Giao Hang
+                  Thông tin giao hàng
                 </h2>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Ho *
+                      Họ *
                     </label>
                     <input
                       type="text"
@@ -317,7 +317,7 @@ const Checkout = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Ten *
+                      Tên *
                     </label>
                     <input
                       type="text"
@@ -343,7 +343,7 @@ const Checkout = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      So Dien Thoai *
+                      Số điện thoại *
                     </label>
                     <input
                       type="tel"
@@ -357,7 +357,7 @@ const Checkout = () => {
                   </div>
                   <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Dia Chi *
+                      Địa chỉ *
                     </label>
                     <input
                       type="text"
@@ -365,13 +365,13 @@ const Checkout = () => {
                       value={formData.address}
                       onChange={handleInputChange}
                       className="input-field"
-                      placeholder="So nha, ten duong"
+                      placeholder="Số nhà, tên đường"
                       required
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Quan/Huyen *
+                      Quận/Huyện *
                     </label>
                     <input
                       type="text"
@@ -384,7 +384,7 @@ const Checkout = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Tinh/Thanh Pho *
+                      Tỉnh/Thành phố *
                     </label>
                     <select
                       name="city"
@@ -393,17 +393,17 @@ const Checkout = () => {
                       className="input-field"
                       required
                     >
-                      <option value="">Chon tinh/thanh pho</option>
-                      <option value="Ho Chi Minh">TP. Ho Chi Minh</option>
-                      <option value="Ha Noi">Ha Noi</option>
-                      <option value="Da Nang">Da Nang</option>
-                      <option value="Hai Phong">Hai Phong</option>
-                      <option value="Can Tho">Can Tho</option>
-                      <option value="Binh Duong">Binh Duong</option>
-                      <option value="Dong Nai">Dong Nai</option>
-                      <option value="Khanh Hoa">Khanh Hoa</option>
-                      <option value="Lam Dong">Lam Dong</option>
-                      <option value="Thua Thien Hue">Thua Thien Hue</option>
+                      <option value="">Chọn tỉnh/thành phố</option>
+                      <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+                      <option value="Hà Nội">Hà Nội</option>
+                      <option value="Đà Nẵng">Đà Nẵng</option>
+                      <option value="Hải Phòng">Hải Phòng</option>
+                      <option value="Cần Thơ">Cần Thơ</option>
+                      <option value="Bình Dương">Bình Dương</option>
+                      <option value="Đồng Nai">Đồng Nai</option>
+                      <option value="Khánh Hòa">Khánh Hòa</option>
+                      <option value="Lâm Đồng">Lâm Đồng</option>
+                      <option value="Thừa Thiên Huế">Thừa Thiên Huế</option>
                     </select>
                   </div>
                 </div>
@@ -418,7 +418,7 @@ const Checkout = () => {
                       className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                     />
                     <span className="ml-2 text-sm text-gray-600">
-                      Luu dia chi nay cho don hang sau
+                        Lưu địa chỉ này cho đơn hàng sau
                     </span>
                   </label>
                 </div>
@@ -429,7 +429,7 @@ const Checkout = () => {
                     onClick={handleNextStep}
                     className="btn-primary"
                   >
-                    Tiep Tuc Thanh Toan
+                    Tiếp tục thanh toán
                   </button>
                 </div>
               </div>
@@ -439,7 +439,7 @@ const Checkout = () => {
             {step === 2 && (
               <div className="bg-white rounded-xl shadow-md p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Phuong Thuc Thanh Toan
+                  Phương thức thanh toán
                 </h2>
 
                 <div className="space-y-4">
@@ -452,7 +452,7 @@ const Checkout = () => {
                       onChange={handleInputChange}
                       className="w-4 h-4 text-primary-600"
                     />
-                    <span className="ml-3 font-medium">Thanh toan khi nhan hang (COD)</span>
+                      <span className="ml-3 font-medium">Thanh toán khi nhận hàng (COD)</span>
                   </label>
 
                   <label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
@@ -464,16 +464,16 @@ const Checkout = () => {
                       onChange={handleInputChange}
                       className="w-4 h-4 text-primary-600"
                     />
-                    <span className="ml-3 font-medium">Chuyen khoan ngan hang</span>
+                      <span className="ml-3 font-medium">Chuyển khoản ngân hàng</span>
                   </label>
 
                   {formData.paymentMethod === 'bank' && (
                     <div className="ml-7 p-4 bg-gray-50 rounded-lg">
                       <p className="text-sm text-gray-700">
-                        <strong>Ngan hang:</strong> Vietcombank<br />
-                        <strong>So tai khoan:</strong> 1234567890<br />
-                        <strong>Chu tai khoan:</strong> Nha Sach Online<br />
-                        <strong>Noi dung:</strong> [Ma don hang] - [So dien thoai]
+                        <strong>Ngân hàng:</strong> Vietcombank<br />
+                        <strong>Số tài khoản:</strong> 1234567890<br />
+                        <strong>Chủ tài khoản:</strong> Nhà Sách Online<br />
+                        <strong>Nội dung:</strong> [Mã đơn hàng] - [Số điện thoại]
                       </p>
                     </div>
                   )}
@@ -487,7 +487,7 @@ const Checkout = () => {
                       onChange={handleInputChange}
                       className="w-4 h-4 text-primary-600"
                     />
-                    <span className="ml-3 font-medium">Vi MoMo</span>
+                      <span className="ml-3 font-medium">Ví MoMo</span>
                   </label>
 
                   <label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
@@ -509,14 +509,14 @@ const Checkout = () => {
                     onClick={() => setStep(1)}
                     className="btn-secondary"
                   >
-                    Quay Lai
+                    Quay lại
                   </button>
                   <button
                     type="button"
                     onClick={handleNextStep}
                     className="btn-primary"
                   >
-                    Xem Lai Don Hang
+                    Xem lại đơn hàng
                   </button>
                 </div>
               </div>
@@ -526,19 +526,19 @@ const Checkout = () => {
             {step === 3 && (
               <div className="bg-white rounded-xl shadow-md p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Xac Nhan Don Hang
+                  Xác nhận đơn hàng
                 </h2>
 
                 {/* Shipping Summary */}
                 <div className="mb-6 pb-6 border-b">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-medium text-gray-900">Dia Chi Giao Hang</h3>
+                    <h3 className="font-medium text-gray-900">Địa chỉ giao hàng</h3>
                     <button
                       type="button"
                       onClick={() => setStep(1)}
                       className="text-primary-600 text-sm hover:text-primary-700"
                     >
-                      Sua
+                      Sửa
                     </button>
                   </div>
                   <p className="text-gray-600">
@@ -553,26 +553,26 @@ const Checkout = () => {
                 {/* Payment Summary */}
                 <div className="mb-6 pb-6 border-b">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-medium text-gray-900">Phuong Thuc Thanh Toan</h3>
+                    <h3 className="font-medium text-gray-900">Phương thức thanh toán</h3>
                     <button
                       type="button"
                       onClick={() => setStep(2)}
                       className="text-primary-600 text-sm hover:text-primary-700"
                     >
-                      Sua
+                      Sửa
                     </button>
                   </div>
                   <p className="text-gray-600">
-                    {formData.paymentMethod === 'cod' && 'Thanh toan khi nhan hang (COD)'}
-                    {formData.paymentMethod === 'bank' && 'Chuyen khoan ngan hang'}
-                    {formData.paymentMethod === 'momo' && 'Vi MoMo'}
+                    {formData.paymentMethod === 'cod' && 'Thanh toán khi nhận hàng (COD)'}
+                    {formData.paymentMethod === 'bank' && 'Chuyển khoản ngân hàng'}
+                    {formData.paymentMethod === 'momo' && 'Ví MoMo'}
                     {formData.paymentMethod === 'vnpay' && 'VNPay'}
                   </p>
                 </div>
 
                 {/* Items Summary */}
                 <div className="mb-6">
-                  <h3 className="font-medium text-gray-900 mb-4">San Pham</h3>
+                  <h3 className="font-medium text-gray-900 mb-4">Sản phẩm</h3>
                   <div className="space-y-3">
                     {cartItems.map((item) => (
                       <div key={item.book.id} className="flex items-center justify-between">
@@ -595,14 +595,14 @@ const Checkout = () => {
                     onClick={() => setStep(2)}
                     className="btn-secondary"
                   >
-                    Quay Lai
+                    Quay lại
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
                     className="btn-primary"
                   >
-                    {loading ? <LoadingSpinner size="small" /> : 'Dat Hang'}
+                    {loading ? <LoadingSpinner size="small" /> : 'Đặt hàng'}
                   </button>
                 </div>
               </div>
@@ -612,12 +612,12 @@ const Checkout = () => {
             {step === 4 && paymentInfo && (
               <div className="bg-white rounded-xl shadow-md p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6 text-center">
-                  Thanh Toan MoMo
+                  Thanh toán MoMo
                 </h2>
 
                 <div className="text-center">
                   <p className="text-gray-600 mb-4">
-                    Quet ma QR bang ung dung MoMo de thanh toan
+                    Quét mã QR bằng ứng dụng MoMo để thanh toán
                   </p>
 
                   {/* QR Code */}
@@ -632,7 +632,7 @@ const Checkout = () => {
                   </div>
 
                   <p className="text-sm text-gray-500 mb-4">
-                    Ma don hang: <span className="font-bold">#{paymentInfo.orderId}</span>
+                    Mã đơn hàng: <span className="font-bold">#{paymentInfo.orderId}</span>
                   </p>
 
                   {/* Open MoMo App Button */}
@@ -642,7 +642,7 @@ const Checkout = () => {
                     rel="noopener noreferrer"
                     className="inline-block w-full bg-pink-500 text-white py-3 px-6 rounded-lg font-medium hover:bg-pink-600 mb-3"
                   >
-                    Mo Ung Dung MoMo
+                    Mở ứng dụng MoMo
                   </a>
 
                   {/* Pay via Web */}
@@ -652,13 +652,13 @@ const Checkout = () => {
                     rel="noopener noreferrer"
                     className="inline-block w-full border border-pink-500 text-pink-500 py-3 px-6 rounded-lg font-medium hover:bg-pink-50 mb-4"
                   >
-                    Thanh Toan Qua Web
+                    Thanh toán qua web
                   </a>
 
                   {/* Demo: Simulate Payment Success */}
                   <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-4 mb-6">
                     <p className="text-sm text-yellow-800 mb-3">
-                      <strong>CHE DO DEMO:</strong> Bam nut ben duoi de gia lap thanh toan thanh cong
+                      <strong>CHẾ ĐỘ DEMO:</strong> Bấm nút bên dưới để giả lập thanh toán thành công
                     </p>
                     <button
                       onClick={async () => {
@@ -667,12 +667,12 @@ const Checkout = () => {
                           navigate(`/orders/${paymentInfo.orderId}?success=true`);
                         } catch (err) {
                           console.error('Error updating order:', err);
-                          alert('Loi cap nhat trang thai don hang');
+                          alert('Lỗi cập nhật trạng thái đơn hàng');
                         }
                       }}
                       className="w-full bg-green-500 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-600"
                     >
-                      Gia Lap Thanh Toan Thanh Cong
+                      Giả lập thanh toán thành công
                     </button>
                   </div>
 
@@ -681,7 +681,7 @@ const Checkout = () => {
                       onClick={() => navigate(`/orders/${paymentInfo.orderId}`)}
                       className="text-primary-600 hover:text-primary-700 font-medium"
                     >
-                      Xem Chi Tiet Don Hang
+                      Xem chi tiết đơn hàng
                     </button>
                   </div>
                 </div>
@@ -694,25 +694,25 @@ const Checkout = () => {
         <div className="lg:col-span-1">
           <div className="bg-white rounded-xl shadow-md p-6 sticky top-24">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Tom Tat Don Hang
+              Tóm tắt đơn hàng
             </h2>
 
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">Tam tinh ({cartItems.length} san pham)</span>
+                <span className="text-gray-600">Tạm tính ({cartItems.length} sản phẩm)</span>
                 <span className="font-medium">{formatPrice(cartTotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Phi van chuyen</span>
+                <span className="text-gray-600">Phí vận chuyển</span>
                 {shippingCost === 0 ? (
-                  <span className="text-green-600 font-medium">MIEN PHI</span>
+                  <span className="text-green-600 font-medium">MIỄN PHÍ</span>
                 ) : (
                   <span className="font-medium">{formatPrice(shippingCost)}</span>
                 )}
               </div>
               <div className="border-t pt-3 mt-3">
                 <div className="flex justify-between text-lg font-semibold">
-                  <span>Tong cong</span>
+                  <span>Tổng cộng</span>
                   <span className="text-primary-600">{formatPrice(total)}</span>
                 </div>
               </div>
@@ -721,7 +721,7 @@ const Checkout = () => {
             {/* Cart Items Preview */}
             <div className="mt-6 pt-6 border-t">
               <h3 className="text-sm font-medium text-gray-900 mb-3">
-                San pham trong don
+                Sản phẩm trong đơn
               </h3>
               <div className="space-y-3 max-h-60 overflow-y-auto">
                 {cartItems.map((item) => (

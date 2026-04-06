@@ -24,7 +24,7 @@ const ReviewForm = ({ bookId, onReviewAdded }) => {
         onReviewAdded();
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Gui danh gia that bai');
+      setError(err.response?.data?.message || 'Gửi đánh giá thất bại');
     } finally {
       setLoading(false);
     }
@@ -56,7 +56,7 @@ const ReviewForm = ({ bookId, onReviewAdded }) => {
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Viet Danh Gia</h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Viết đánh giá</h3>
 
       {error && (
         <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
@@ -68,7 +68,7 @@ const ReviewForm = ({ bookId, onReviewAdded }) => {
         {/* Rating Stars */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Danh gia cua ban
+            Đánh giá của bạn
           </label>
           <div className="flex space-x-1">
             {[1, 2, 3, 4, 5].map((star) => renderStar(star))}
@@ -81,14 +81,14 @@ const ReviewForm = ({ bookId, onReviewAdded }) => {
             htmlFor="comment"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
-            Nhan xet cua ban
+            Nhận xét của bạn
           </label>
           <textarea
             id="comment"
             rows={4}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="Chia se suy nghi cua ban ve cuon sach nay..."
+            placeholder="Chia sẻ suy nghĩ của bạn về cuốn sách này..."
             className="input-field resize-none"
             required
           />
@@ -121,10 +121,10 @@ const ReviewForm = ({ bookId, onReviewAdded }) => {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              Dang gui...
+              Đang gửi...
             </span>
           ) : (
-            'Gui Danh Gia'
+            'Gửi đánh giá'
           )}
         </button>
       </form>

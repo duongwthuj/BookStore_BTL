@@ -64,11 +64,11 @@ const Profile = () => {
       });
 
       updateUser(response.data);
-      setMessage({ type: 'success', text: 'Cap nhat thong tin thanh cong!' });
+      setMessage({ type: 'success', text: 'Cập nhật thông tin thành công!' });
     } catch (error) {
       setMessage({
         type: 'error',
-        text: error.response?.data?.message || 'Cap nhat that bai',
+        text: error.response?.data?.message || 'Cập nhật thất bại',
       });
     } finally {
       setLoading(false);
@@ -81,13 +81,13 @@ const Profile = () => {
     setMessage({ type: '', text: '' });
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setMessage({ type: 'error', text: 'Mat khau moi khong khop' });
+      setMessage({ type: 'error', text: 'Mật khẩu mới không khớp' });
       setLoading(false);
       return;
     }
 
     if (passwordData.newPassword.length < 8) {
-      setMessage({ type: 'error', text: 'Mat khau phai co it nhat 8 ky tu' });
+      setMessage({ type: 'error', text: 'Mật khẩu phải có ít nhất 8 ký tự' });
       setLoading(false);
       return;
     }
@@ -98,7 +98,7 @@ const Profile = () => {
         passwordData.newPassword
       );
 
-      setMessage({ type: 'success', text: 'Doi mat khau thanh cong!' });
+      setMessage({ type: 'success', text: 'Đổi mật khẩu thành công!' });
       setPasswordData({
         currentPassword: '',
         newPassword: '',
@@ -107,7 +107,7 @@ const Profile = () => {
     } catch (error) {
       setMessage({
         type: 'error',
-        text: error.response?.data?.message || 'Doi mat khau that bai',
+        text: error.response?.data?.message || 'Đổi mật khẩu thất bại',
       });
     } finally {
       setLoading(false);
@@ -115,7 +115,7 @@ const Profile = () => {
   };
 
   const handleDeleteAccount = async () => {
-    if (!window.confirm('Ban co chac chan muon xoa tai khoan? Hanh dong nay khong the hoan tac.')) {
+    if (!window.confirm('Bạn có chắc chắn muốn xoá tài khoản không? Hành động này không thể hoàn tác.')) {
       return;
     }
 
@@ -125,15 +125,15 @@ const Profile = () => {
     } catch (error) {
       setMessage({
         type: 'error',
-        text: error.response?.data?.message || 'Xoa tai khoan that bai',
+        text: error.response?.data?.message || 'Xoá tài khoản thất bại',
       });
     }
   };
 
   const tabLabels = {
-    profile: 'Thong tin',
-    password: 'Mat khau',
-    preferences: 'Tuy chon',
+    profile: 'Thông tin',
+    password: 'Mật khẩu',
+    preferences: 'Tuỳ chọn',
   };
 
   if (!isAuthenticated) {
@@ -142,7 +142,7 @@ const Profile = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Cai Dat Tai Khoan</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Cài đặt tài khoản</h1>
 
       {/* Tabs */}
       <div className="flex space-x-1 bg-gray-100 rounded-lg p-1 mb-8">
@@ -180,12 +180,12 @@ const Profile = () => {
       {/* Profile Tab */}
       {activeTab === 'profile' && (
         <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Thong Tin Ca Nhan</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Thông tin cá nhân</h2>
           <form onSubmit={handleProfileSubmit} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ho
+                  Họ
                 </label>
                 <input
                   type="text"
@@ -197,7 +197,7 @@ const Profile = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ten
+                  Tên
                 </label>
                 <input
                   type="text"
@@ -211,7 +211,7 @@ const Profile = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Dia Chi Email
+                Địa chỉ email
               </label>
               <input
                 type="email"
@@ -221,13 +221,13 @@ const Profile = () => {
                 className="input-field bg-gray-100 cursor-not-allowed"
               />
               <p className="text-sm text-gray-500 mt-1">
-                Email khong the thay doi
+                Email không thể thay đổi
               </p>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                So Dien Thoai
+                Số điện thoại
               </label>
               <input
                 type="tel"
@@ -245,7 +245,7 @@ const Profile = () => {
                 disabled={loading}
                 className="btn-primary"
               >
-                {loading ? <LoadingSpinner size="small" /> : 'Luu Thay Doi'}
+                {loading ? <LoadingSpinner size="small" /> : 'Lưu thay đổi'}
               </button>
             </div>
           </form>
@@ -255,11 +255,11 @@ const Profile = () => {
       {/* Password Tab */}
       {activeTab === 'password' && (
         <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Doi Mat Khau</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Đổi mật khẩu</h2>
           <form onSubmit={handlePasswordSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Mat Khau Hien Tai
+                Mật khẩu hiện tại
               </label>
               <input
                 type="password"
@@ -273,7 +273,7 @@ const Profile = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Mat Khau Moi
+                Mật khẩu mới
               </label>
               <input
                 type="password"
@@ -285,13 +285,13 @@ const Profile = () => {
                 minLength={8}
               />
               <p className="text-sm text-gray-500 mt-1">
-                Phai co it nhat 8 ky tu
+                Phải có ít nhất 8 ký tự
               </p>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Xac Nhan Mat Khau Moi
+                Xác nhận mật khẩu mới
               </label>
               <input
                 type="password"
@@ -309,7 +309,7 @@ const Profile = () => {
                 disabled={loading}
                 className="btn-primary"
               >
-                {loading ? <LoadingSpinner size="small" /> : 'Doi Mat Khau'}
+                {loading ? <LoadingSpinner size="small" /> : 'Đổi mật khẩu'}
               </button>
             </div>
           </form>
@@ -320,13 +320,13 @@ const Profile = () => {
       {activeTab === 'preferences' && (
         <div className="space-y-6">
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Thong Bao</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">Thông báo</h2>
             <div className="space-y-4">
               {[
-                { id: 'orderUpdates', label: 'Cap nhat don hang', description: 'Nhan thong bao ve don hang cua ban' },
-                { id: 'promotions', label: 'Khuyen mai', description: 'Nhan email ve chuong trinh khuyen mai' },
-                { id: 'newArrivals', label: 'Sach moi', description: 'Duoc thong bao khi co sach moi' },
-                { id: 'recommendations', label: 'Goi y sach', description: 'Goi y sach dua tren so thich cua ban' },
+                { id: 'orderUpdates', label: 'Cập nhật đơn hàng', description: 'Nhận thông báo về đơn hàng của bạn' },
+                { id: 'promotions', label: 'Khuyến mãi', description: 'Nhận email về chương trình khuyến mãi' },
+                { id: 'newArrivals', label: 'Sách mới', description: 'Được thông báo khi có sách mới' },
+                { id: 'recommendations', label: 'Gợi ý sách', description: 'Gợi ý sách dựa trên sở thích của bạn' },
               ].map((item) => (
                 <label key={item.id} className="flex items-start cursor-pointer">
                   <input
@@ -345,15 +345,15 @@ const Profile = () => {
 
           {/* Danger Zone */}
           <div className="bg-white rounded-xl shadow-md p-6 border-2 border-red-200">
-            <h2 className="text-xl font-semibold text-red-600 mb-4">Vung Nguy Hiem</h2>
+            <h2 className="text-xl font-semibold text-red-600 mb-4">Vùng nguy hiểm</h2>
             <p className="text-gray-600 mb-4">
-              Khi xoa tai khoan, ban se khong the khoi phuc lai. Vui long can nhac ky truoc khi thuc hien.
+              Khi xoá tài khoản, bạn sẽ không thể khôi phục lại. Vui lòng cân nhắc kỹ trước khi thực hiện.
             </p>
             <button
               onClick={handleDeleteAccount}
               className="btn-danger"
             >
-              Xoa Tai Khoan
+              Xoá tài khoản
             </button>
           </div>
         </div>

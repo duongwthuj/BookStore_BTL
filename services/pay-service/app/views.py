@@ -132,30 +132,38 @@ class MoMoReturnView(APIView):
     """
 
     def get(self, request):
-        result_code = request.query_params.get('resultCode')
-        momo_order_id = request.query_params.get('orderId')
-        message = request.query_params.get('message', '')
+        # MoMo returns query params similar to IPN payload. In local dev, IPN is
+        # often unreachable; process return as a fallback so payments can complete.
+        qp = request.query_params
+        result_code = qp.get('resultCode')
+        momo_order_id = qp.get('orderId')
+        message = qp.get('message', '')
+        trans_id = qp.get('transId')
+        signature = qp.get('signature')
 
         if momo_order_id:
             order_id = momo_client.parse_order_id(momo_order_id)
         else:
             order_id = 0
 
-        # This endpoint is typically used to redirect user to frontend
-        # For API purposes, return payment result
-        if result_code == '0':
-            return Response({
-                'status': 'success',
-                'message': 'Payment completed successfully',
-                'order_id': order_id
-            })
-        else:
-            return Response({
-                'status': 'failed',
-                'message': message or 'Payment failed',
-                'result_code': result_code,
-                'order_id': order_id
-            })
+        # If signature is present, try to verify and update payment/order status.
+        if signature and momo_order_id and result_code is not None and trans_id:
+            try:
+                if momo_client.verify_callback_signature(qp):
+                    payment_service.process_momo_callback(
+                        order_id=order_id,
+                        result_code=int(result_code),
+                        transaction_id=trans_id,
+                    )
+            except Exception:
+                # Don't break the user redirect path due to internal errors.
+                pass
+
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:3000').rstrip('/')
+        target = f"{frontend_url}/orders/{order_id}" if order_id else f"{frontend_url}/orders"
+        success_str = 'true' if result_code == '0' else 'false'
+        redirect_target = f"{target}?success={success_str}"
+        return HttpResponseRedirect(redirect_target)
 
 
 class CODCreateView(APIView):

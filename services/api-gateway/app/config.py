@@ -104,6 +104,10 @@ PUBLIC_ENDPOINTS = [
 
     # Shipping methods (read-only)
     ('/api/shipping/methods/', ['GET']),
+
+    # Payment gateway callbacks/redirects (must be public)
+    ('/api/payments/momo/return/', ['GET']),
+    ('/api/payments/momo/callback/', ['POST']),
 ]
 
 

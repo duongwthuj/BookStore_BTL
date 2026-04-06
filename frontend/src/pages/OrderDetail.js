@@ -42,14 +42,14 @@ const OrderDetail = () => {
   };
 
   const handleCancelOrder = async () => {
-    if (!window.confirm('Ban co chac chan muon huy don hang nay?')) return;
+    if (!window.confirm('Bạn có chắc chắn muốn huỷ đơn hàng này không?')) return;
 
     try {
       setCancelling(true);
       await orderService.cancelOrder(id);
       fetchOrder();
     } catch (error) {
-      alert(error.response?.data?.message || 'Huy don hang that bai');
+      alert(error.response?.data?.message || 'Huỷ đơn hàng thất bại');
     } finally {
       setCancelling(false);
     }
@@ -68,11 +68,11 @@ const OrderDetail = () => {
 
   const getStatusText = (status) => {
     const statusMap = {
-      pending: 'Cho xu ly',
-      processing: 'Dang xu ly',
-      shipped: 'Dang giao hang',
-      delivered: 'Da giao hang',
-      cancelled: 'Da huy',
+      pending: 'Chờ xử lý',
+      processing: 'Đang xử lý',
+      shipped: 'Đang giao hàng',
+      delivered: 'Đã giao hàng',
+      cancelled: 'Đã huỷ',
     };
     return statusMap[status?.toLowerCase()] || status;
   };
@@ -83,7 +83,7 @@ const OrderDetail = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return 'Không có';
     return new Date(dateString).toLocaleDateString('vi-VN', {
       year: 'numeric',
       month: 'long',
@@ -104,10 +104,10 @@ const OrderDetail = () => {
   if (!order) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Khong Tim Thay Don Hang</h1>
-        <p className="text-gray-500 mb-6">Don hang ban dang tim khong ton tai.</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Không tìm thấy đơn hàng</h1>
+        <p className="text-gray-500 mb-6">Đơn hàng bạn đang tìm không tồn tại.</p>
         <Link to="/orders" className="btn-primary">
-          Xem Tat Ca Don Hang
+          Xem tất cả đơn hàng
         </Link>
       </div>
     );
@@ -124,7 +124,7 @@ const OrderDetail = () => {
           <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
-          Dat hang thanh cong! Cam on ban da mua hang.
+          Đặt hàng thành công! Cảm ơn bạn đã mua hàng.
         </div>
       )}
 
@@ -132,12 +132,12 @@ const OrderDetail = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
           <Link to="/orders" className="text-primary-600 hover:text-primary-700 text-sm mb-2 inline-block">
-            &larr; Quay lai don hang
+            &larr; Quay lại đơn hàng
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">
-            Don Hang #{order.id || order.order_number}
+            Đơn hàng #{order.id || order.order_number}
           </h1>
-          <p className="text-gray-500">Dat ngay {formatDate(order.created_at)}</p>
+          <p className="text-gray-500">Đặt ngày {formatDate(order.created_at)}</p>
         </div>
         <span
           className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium mt-4 sm:mt-0 ${getStatusColor(
@@ -151,10 +151,10 @@ const OrderDetail = () => {
       {/* Order Tracking */}
       {!isCancelled && (
         <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">Trang Thai Don Hang</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">Trạng thái đơn hàng</h2>
           <div className="relative">
             <div className="flex items-center justify-between">
-              {['Cho xu ly', 'Dang xu ly', 'Dang giao', 'Da giao'].map((step, index) => (
+              {['Chờ xử lý', 'Đang xử lý', 'Đang giao', 'Đã giao'].map((step, index) => (
                 <div key={step} className="flex flex-col items-center relative z-10">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center ${
@@ -192,7 +192,7 @@ const OrderDetail = () => {
           {order.tracking_number && (
             <div className="mt-6 pt-6 border-t">
               <p className="text-sm text-gray-600">
-                <span className="font-medium">Ma van don:</span> {order.tracking_number}
+                <span className="font-medium">Mã vận đơn:</span> {order.tracking_number}
               </p>
             </div>
           )}
@@ -203,7 +203,7 @@ const OrderDetail = () => {
         {/* Order Items */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">San Pham</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Sản phẩm</h2>
             <div className="divide-y">
               {(order.items || []).map((item, index) => (
                 <div key={index} className="py-4 flex items-center">
@@ -237,7 +237,7 @@ const OrderDetail = () => {
                       to={`/books/${item.book?.id}`}
                       className="font-medium text-gray-900 hover:text-primary-600"
                     >
-                      {item.book?.title || 'Sach khong xac dinh'}
+                      {item.book?.title || 'Sách không xác định'}
                     </Link>
                     <p className="text-sm text-gray-500">{item.book?.author}</p>
                     <p className="text-sm text-gray-500 mt-1">SL: {item.quantity}</p>
@@ -247,7 +247,7 @@ const OrderDetail = () => {
                       {formatPrice((item.price || item.book?.price || 0) * item.quantity)}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {formatPrice(item.price || item.book?.price || 0)}/cuon
+                      {formatPrice(item.price || item.book?.price || 0)}/cuốn
                     </p>
                   </div>
                 </div>
@@ -260,17 +260,17 @@ const OrderDetail = () => {
         <div className="lg:col-span-1 space-y-6">
           {/* Payment Summary */}
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Tom Tat Don Hang</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Tóm tắt đơn hàng</h2>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">Tam tinh</span>
+                <span className="text-gray-600">Tạm tính</span>
                 <span className="font-medium">{formatPrice(order.subtotal || 0)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Phi van chuyen</span>
+                <span className="text-gray-600">Phí vận chuyển</span>
                 <span className="font-medium">
                   {parseFloat(order.shipping_cost || 0) === 0 ? (
-                    <span className="text-green-600">MIEN PHI</span>
+                    <span className="text-green-600">MIỄN PHÍ</span>
                   ) : (
                     formatPrice(order.shipping_cost || 0)
                   )}
@@ -278,7 +278,7 @@ const OrderDetail = () => {
               </div>
               <div className="border-t pt-3 mt-3">
                 <div className="flex justify-between text-lg font-semibold">
-                  <span>Tong cong</span>
+                  <span>Tổng cộng</span>
                   <span className="text-primary-600">
                     {formatPrice(order.total || 0)}
                   </span>
@@ -289,7 +289,7 @@ const OrderDetail = () => {
 
           {/* Shipping Address */}
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Dia Chi Giao Hang</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Địa chỉ giao hàng</h2>
             <p className="text-gray-600">
               {order.shipping_address?.first_name} {order.shipping_address?.last_name}<br />
               {order.shipping_address?.address}<br />
@@ -300,13 +300,13 @@ const OrderDetail = () => {
 
           {/* Payment Method */}
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Phuong Thuc Thanh Toan</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Phương thức thanh toán</h2>
             <p className="text-gray-600">
-              {order.payment_method === 'cod' && 'Thanh toan khi nhan hang (COD)'}
-              {order.payment_method === 'bank' && 'Chuyen khoan ngan hang'}
-              {order.payment_method === 'momo' && 'Vi MoMo'}
+              {order.payment_method === 'cod' && 'Thanh toán khi nhận hàng (COD)'}
+              {order.payment_method === 'bank' && 'Chuyển khoản ngân hàng'}
+              {order.payment_method === 'momo' && 'Ví MoMo'}
               {order.payment_method === 'vnpay' && 'VNPay'}
-              {!order.payment_method && 'Chua xac dinh'}
+              {!order.payment_method && 'Chưa xác định'}
             </p>
           </div>
 
@@ -317,7 +317,7 @@ const OrderDetail = () => {
               disabled={cancelling}
               className="w-full btn-danger py-3"
             >
-              {cancelling ? <LoadingSpinner size="small" /> : 'Huy Don Hang'}
+              {cancelling ? <LoadingSpinner size="small" /> : 'Huỷ đơn hàng'}
             </button>
           )}
         </div>

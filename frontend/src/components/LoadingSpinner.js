@@ -36,7 +36,7 @@ const LoadingSpinner = ({ size = 'medium', fullScreen = false }) => {
       <div className="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50">
         <div className="text-center">
           {spinner}
-          <p className="mt-4 text-gray-600">Dang tai...</p>
+          <p className="mt-4 text-gray-600">Đang tải...</p>
         </div>
       </div>
     );

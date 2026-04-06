@@ -103,10 +103,10 @@ const BookDetail = () => {
   if (!book) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Khong Tim Thay Sach</h1>
-        <p className="text-gray-500 mb-6">Cuon sach ban dang tim khong ton tai.</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Không tìm thấy sách</h1>
+        <p className="text-gray-500 mb-6">Cuốn sách bạn đang tìm không tồn tại.</p>
         <Link to="/books" className="btn-primary">
-          Xem Tat Ca Sach
+          Xem tất cả sách
         </Link>
       </div>
     );
@@ -123,13 +123,13 @@ const BookDetail = () => {
         <ol className="flex items-center space-x-2 text-sm text-gray-500">
           <li>
             <Link to="/" className="hover:text-primary-600">
-              Trang chu
+              Trang chủ
             </Link>
           </li>
           <li>/</li>
           <li>
             <Link to="/books" className="hover:text-primary-600">
-              Sach
+              Sách
             </Link>
           </li>
           {book.category && (
@@ -199,13 +199,13 @@ const BookDetail = () => {
                 </Link>
               )}
               <h1 className="text-3xl font-bold text-gray-900 mt-2 mb-2">{book.title}</h1>
-              <p className="text-lg text-gray-600 mb-4">Tac gia: {book.author}</p>
+              <p className="text-lg text-gray-600 mb-4">Tác giả: {book.author}</p>
 
               {/* Rating */}
               <div className="flex items-center mb-6">
                 {renderStars(book.average_rating || 0)}
                 <span className="ml-2 text-gray-600">
-                  {(book.average_rating || 0).toFixed(1)} ({book.review_count || 0} danh gia)
+                  {(book.average_rating || 0).toFixed(1)} ({book.review_count || 0} đánh giá)
                 </span>
               </div>
 
@@ -220,7 +220,7 @@ const BookDetail = () => {
                       {formatPrice(book.price)}
                     </span>
                     <span className="bg-red-100 text-red-600 text-sm font-medium px-2 py-1 rounded">
-                      Tiet kiem {formatPrice(book.price - discountedPrice)}
+                      Tiết kiệm {formatPrice(book.price - discountedPrice)}
                     </span>
                   </div>
                 ) : (
@@ -237,23 +237,23 @@ const BookDetail = () => {
                     <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    Con hang ({book.stock} cuon)
+                    Còn hàng ({book.stock} cuốn)
                   </span>
                 ) : (
                   <span className="inline-flex items-center text-red-600">
                     <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    Het hang
+                    Hết hàng
                   </span>
                 )}
               </div>
 
               {/* Description */}
               <div className="mb-6">
-                <h3 className="font-semibold text-gray-900 mb-2">Mo ta</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">Mô tả</h3>
                 <p className="text-gray-600 whitespace-pre-wrap">
-                  {book.description || 'Chua co mo ta.'}
+                  {book.description || 'Chưa có mô tả.'}
                 </p>
               </div>
 
@@ -273,7 +273,7 @@ const BookDetail = () => {
                 )}
                 {book.publication_date && (
                   <div>
-                    <span className="text-gray-500">Nam xuat ban:</span>
+                    <span className="text-gray-500">Năm xuất bản:</span>
                     <span className="ml-2 text-gray-900">
                       {new Date(book.publication_date).toLocaleDateString('vi-VN')}
                     </span>
@@ -281,7 +281,7 @@ const BookDetail = () => {
                 )}
                 {book.pages && (
                   <div>
-                    <span className="text-gray-500">So trang:</span>
+                    <span className="text-gray-500">Số trang:</span>
                     <span className="ml-2 text-gray-900">{book.pages}</span>
                   </div>
                 )}
@@ -291,7 +291,7 @@ const BookDetail = () => {
             {/* Add to Cart */}
             <div className="border-t pt-6">
               <div className="flex items-center space-x-4 mb-4">
-                <label className="text-gray-700 font-medium">So luong:</label>
+                <label className="text-gray-700 font-medium">Số lượng:</label>
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -328,14 +328,14 @@ const BookDetail = () => {
                       <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      Da Them Vao Gio
+                      Đã thêm vào giỏ
                     </>
                   ) : (
                     <>
                       <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
-                      Them Vao Gio Hang
+                      Thêm vào giỏ hàng
                     </>
                   )}
                 </button>
@@ -343,7 +343,7 @@ const BookDetail = () => {
                   to="/cart"
                   className="btn-secondary py-3 px-6 text-center"
                 >
-                  Xem Gio Hang
+                  Xem giỏ hàng
                 </Link>
               </div>
             </div>
@@ -353,7 +353,7 @@ const BookDetail = () => {
 
       {/* Reviews Section */}
       <div className="mb-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Danh Gia Tu Khach Hang</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Đánh giá từ khách hàng</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <ReviewList reviews={reviews} loading={reviewsLoading} />
@@ -364,10 +364,10 @@ const BookDetail = () => {
             ) : (
               <div className="bg-white rounded-xl shadow-md p-6 text-center">
                 <p className="text-gray-600 mb-4">
-                  Vui long dang nhap de viet danh gia.
+                  Vui lòng đăng nhập để viết đánh giá.
                 </p>
                 <Link to="/login" className="btn-primary">
-                  Dang Nhap
+                  Đăng nhập
                 </Link>
               </div>
             )}
@@ -378,7 +378,7 @@ const BookDetail = () => {
       {/* Related Books */}
       {relatedBooks.length > 0 && (
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Sach Lien Quan</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Sách liên quan</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
             {relatedBooks.map((relatedBook) => (
               <BookCard key={relatedBook.id} book={relatedBook} />

@@ -15,6 +15,33 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const extractApiErrorMessage = (error) => {
+    const data = error?.response?.data;
+
+    if (!data) return null;
+    if (typeof data === 'string') return data;
+
+    // Common DRF shapes
+    if (typeof data.message === 'string') return data.message;
+    if (typeof data.detail === 'string') return data.detail;
+
+    // Field errors: { field: ["msg"] } or { non_field_errors: ["msg"] }
+    if (typeof data === 'object') {
+      const firstKey = Object.keys(data)[0];
+      const firstValue = data[firstKey];
+
+      if (Array.isArray(firstValue) && firstValue.length > 0) {
+        return String(firstValue[0]);
+      }
+
+      if (typeof firstValue === 'string') {
+        return firstValue;
+      }
+    }
+
+    return null;
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     const storedUser = localStorage.getItem('user');
@@ -45,7 +72,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.message || 'Login failed'
+        error: extractApiErrorMessage(error) || 'Login failed'
       };
     }
   };
@@ -57,7 +84,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.message || 'Registration failed'
+        error: extractApiErrorMessage(error) || 'Registration failed'
       };
     }
   };

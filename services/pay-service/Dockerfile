@@ -17,4 +17,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "pay_service.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--timeout", "120", "pay_service.wsgi:application"]
