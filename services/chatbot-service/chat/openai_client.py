@@ -37,7 +37,7 @@ class OpenAIClient:
         ]
 
         if context:
-            messages.append({"role": "system", "content": f"Thong tin bo sung:\n{context}"})
+            messages.append({"role": "system", "content": f"Thông tin bổ sung:\n{context}"})
 
         messages.append({"role": "user", "content": user_message})
 

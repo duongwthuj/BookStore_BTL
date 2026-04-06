@@ -47,7 +47,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'chatbot_service.wsgi.application'
 
-# No database needed - stateless service
+# No relational database needed - using MongoDB for chat data
 DATABASES = {}
 
 # Internationalization
@@ -70,6 +70,8 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.FormParser',
     ],
     'UNAUTHENTICATED_USER': None,
 }
@@ -93,13 +95,40 @@ OLLAMA_MODEL = os.environ.get('OLLAMA_MODEL', 'llama3.2:1b')
 BOOK_SERVICE_URL = os.environ.get('BOOK_SERVICE_URL', 'http://book-service:8001')
 ORDER_SERVICE_URL = os.environ.get('ORDER_SERVICE_URL', 'http://order-service:8004')
 
-# System prompt for chatbot
-CHATBOT_SYSTEM_PROMPT = """Bạn là trợ lý của BookStore. Hãy trả lời các câu hỏi về:
-- Giới thiệu cửa hàng
-- Hướng dẫn đặt hàng
-- Thanh toán (MoMo, COD)
-- Vận chuyển
-- Chính sách đổi trả
-- Tra cứu sách
-- Tra cứu đơn hàng
-Trả lời ngắn gọn, thân thiện bằng tiếng Việt."""
+# MongoDB settings
+MONGODB_URL = os.environ.get('MONGODB_URL', 'mongodb://mongo:mongo@mongodb:27017/chatbot_db?authSource=admin')
+MONGODB_DB_NAME = os.environ.get('MONGODB_DB_NAME', 'chatbot_db')
+
+# Qdrant settings
+QDRANT_HOST = os.environ.get('QDRANT_HOST', 'qdrant')
+QDRANT_PORT = int(os.environ.get('QDRANT_PORT', '6333'))
+QDRANT_COLLECTION = os.environ.get('QDRANT_COLLECTION', 'bookstore_knowledge')
+
+# Embedding settings
+EMBEDDING_MODEL = os.environ.get('EMBEDDING_MODEL', 'dangvantuan/vietnamese-document-embedding')
+EMBEDDING_DIMENSION = int(os.environ.get('EMBEDDING_DIMENSION', '768'))
+
+# RAG settings
+RAG_TOP_K = int(os.environ.get('RAG_TOP_K', '5'))
+RAG_SIMILARITY_THRESHOLD = float(os.environ.get('RAG_SIMILARITY_THRESHOLD', '0.3'))
+
+# Chunking settings
+CHUNK_SIZE = int(os.environ.get('CHUNK_SIZE', '512'))
+CHUNK_OVERLAP = int(os.environ.get('CHUNK_OVERLAP', '50'))
+MIN_CHUNK_SIZE = int(os.environ.get('MIN_CHUNK_SIZE', '100'))
+
+# System prompt for chatbot (RAG-enhanced)
+CHATBOT_SYSTEM_PROMPT = """Bạn là trợ lý AI thông minh của BookStore, được trang bị khả năng tìm kiếm thông tin từ cơ sở dữ liệu sách và tài liệu.
+
+Nhiệm vụ của bạn:
+- Tư vấn và gợi ý sách phù hợp dựa trên nhu cầu khách hàng
+- Trả lời câu hỏi về thông tin sách (tác giả, giá, mô tả, thể loại...)
+- Hướng dẫn đặt hàng, thanh toán (MoMo, COD), vận chuyển
+- Giải đáp chính sách đổi trả, bảo hành
+- Tra cứu trạng thái đơn hàng
+
+Quy tắc:
+- Trả lời dựa trên thông tin được cung cấp trong ngữ cảnh (context). Nếu không có thông tin liên quan, hãy nói rõ.
+- Trả lời ngắn gọn, thân thiện, chuyên nghiệp bằng tiếng Việt.
+- Khi giới thiệu sách, luôn kèm tên sách, tác giả và giá (nếu có).
+- Nếu người dùng hỏi ngoài phạm vi, hãy lịch sự hướng dẫn họ liên hệ nhân viên."""
