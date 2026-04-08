@@ -51,7 +51,7 @@ def chat(request):
             session_id = mongo_store.create_session(user_id=user_id, title=message[:50])
 
         rag_result = rag_service.query(user_message=message, session_id=session_id)
-        result = gemini_client.generate_response(message, rag_result.get("context_text"))
+        result = gemini_client.generate_response(message, rag_result.get("prompt"))
 
         if result['success']:
             rag_service.save_interaction(
