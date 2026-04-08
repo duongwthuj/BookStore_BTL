@@ -81,5 +81,30 @@ class BookService:
             return False
 
 
-# Singleton instance
+class RecommenderService:
+    """Service for interacting with the recommender-service."""
+
+    def __init__(self):
+        self.base_url = getattr(settings, 'RECOMMENDER_SERVICE_URL', 'http://recommender-service:8000')
+
+    def record_cart_interaction(self, customer_id: int, book_id: int):
+        """Record an add-to-cart interaction."""
+        try:
+            response = requests.post(
+                f"{self.base_url}/interactions/",
+                json={
+                    'customer_id': customer_id,
+                    'book_id': book_id,
+                    'interaction_type': 'cart'
+                },
+                timeout=3
+            )
+            return response.status_code == 201
+        except requests.exceptions.RequestException:
+            # Don't fail cart operation if recommender is down
+            return False
+
+
+# Singleton instances
 book_service = BookService()
+recommender_service = RecommenderService()

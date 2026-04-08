@@ -16,7 +16,7 @@ from .serializers import (
     ReviewReplyCreateSerializer,
     ReviewSerializer,
 )
-from .services import order_service
+from .services import order_service, recommender_service
 
 
 class BookReviewListView(ListAPIView):
@@ -35,13 +35,18 @@ class ReviewCreateView(CreateAPIView):
     def perform_create(self, serializer):
         customer_id = serializer.validated_data.get('customer_id')
         book_id = serializer.validated_data.get('book_id')
+        rating = serializer.validated_data.get('rating')
 
         # Verify purchase if customer_id is provided
         is_verified = False
         if customer_id:
             is_verified = order_service.verify_purchase(customer_id, book_id)
 
-        serializer.save(is_verified_purchase=is_verified)
+        review = serializer.save(is_verified_purchase=is_verified)
+
+        # Record rating interaction for recommender system
+        if customer_id and rating:
+            recommender_service.record_rating(customer_id, book_id, rating)
 
 
 class BookRatingStatsView(APIView):

@@ -77,4 +77,40 @@ class OrderService:
             return []
 
 
+class RecommenderService:
+    """Service to interact with the recommender-service."""
+
+    def __init__(self):
+        self.base_url = getattr(settings, 'RECOMMENDER_SERVICE_URL', 'http://recommender-service:8000')
+
+    def record_rating(self, customer_id: int, book_id: int, rating: int) -> bool:
+        """
+        Record a rating interaction for the recommender system.
+
+        Args:
+            customer_id: The customer's ID
+            book_id: The book's ID
+            rating: The rating value (1-5)
+
+        Returns:
+            bool: True if recorded successfully
+        """
+        try:
+            response = requests.post(
+                f"{self.base_url}/interactions/",
+                json={
+                    'customer_id': customer_id,
+                    'book_id': book_id,
+                    'interaction_type': 'rate',
+                    'rating': rating,
+                },
+                timeout=3
+            )
+            return response.status_code == 201
+        except requests.exceptions.RequestException as e:
+            logger.warning(f"Error recording rating interaction: {e}")
+            return False
+
+
 order_service = OrderService()
+recommender_service = RecommenderService()

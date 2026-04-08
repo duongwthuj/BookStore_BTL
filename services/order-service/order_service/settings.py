@@ -108,5 +108,6 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
 
 # Service URLs for inter-service communication
-CART_SERVICE_URL = os.environ.get('CART_SERVICE_URL', 'http://localhost:8003')
-BOOK_SERVICE_URL = os.environ.get('BOOK_SERVICE_URL', 'http://localhost:8001')
+CART_SERVICE_URL = os.environ.get('CART_SERVICE_URL', 'http://localhost:8007')
+BOOK_SERVICE_URL = os.environ.get('BOOK_SERVICE_URL', 'http://localhost:8006')
+RECOMMENDER_SERVICE_URL = os.environ.get('RECOMMENDER_SERVICE_URL', 'http://localhost:8012')

@@ -113,6 +113,41 @@ class BookServiceClient:
         return results
 
 
+class RecommenderServiceClient:
+    """Client for communicating with recommender-service."""
+
+    def __init__(self):
+        self.base_url = getattr(settings, 'RECOMMENDER_SERVICE_URL', 'http://recommender-service:8000')
+
+    def record_interaction(self, customer_id, book_id, interaction_type, rating=None):
+        """Record a user interaction with a book."""
+        try:
+            data = {
+                'customer_id': customer_id,
+                'book_id': book_id,
+                'interaction_type': interaction_type,
+            }
+            if rating is not None:
+                data['rating'] = rating
+
+            response = requests.post(
+                f"{self.base_url}/interactions/",
+                json=data,
+                timeout=5
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as e:
+            logger.warning(f"Error recording interaction: {e}")
+            # Don't raise - recommender is not critical
+            return None
+
+    def record_purchase(self, customer_id, book_ids):
+        """Record purchase interactions for multiple books."""
+        for book_id in book_ids:
+            self.record_interaction(customer_id, book_id, 'purchase')
+
+
 class ServiceException(Exception):
     """Exception raised when service communication fails."""
     pass
@@ -121,3 +156,4 @@ class ServiceException(Exception):
 # Singleton instances
 cart_service = CartServiceClient()
 book_service = BookServiceClient()
+recommender_service = RecommenderServiceClient()

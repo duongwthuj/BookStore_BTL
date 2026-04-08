@@ -15,7 +15,7 @@ from .serializers import (
     CouponSerializer,
     CouponValidateSerializer,
 )
-from .services import book_service, ServiceException
+from .services import book_service, recommender_service, ServiceException
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -119,6 +119,10 @@ class OrderViewSet(viewsets.ModelViewSet):
         except ServiceException as e:
             # Log error but don't fail the order
             pass
+
+        # Record purchase interactions for recommender system
+        book_ids = [item['book_id'] for item in items]
+        recommender_service.record_purchase(data['customer_id'], book_ids)
 
         # Return created order
         order.refresh_from_db()

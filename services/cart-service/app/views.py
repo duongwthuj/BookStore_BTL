@@ -12,7 +12,7 @@ from .serializers import (
     CartItemCreateSerializer,
     CartItemUpdateSerializer,
 )
-from .services import book_service, BookServiceError
+from .services import book_service, recommender_service, BookServiceError
 
 
 def get_user_id_from_request(request):
@@ -97,6 +97,10 @@ def add_my_item(request):
         quantity=quantity,
         price=Decimal(str(price))
     )
+
+    # Record cart interaction for recommender
+    recommender_service.record_cart_interaction(customer_id, book_id)
+
     return Response(CartItemSerializer(cart_item).data, status=status.HTTP_201_CREATED)
 
 
@@ -251,6 +255,10 @@ def add_item(request, customer_id):
         quantity=quantity,
         price=Decimal(str(price))
     )
+
+    # Record cart interaction for recommender
+    recommender_service.record_cart_interaction(customer_id, book_id)
+
     return Response(CartItemSerializer(cart_item).data, status=status.HTTP_201_CREATED)
 
 

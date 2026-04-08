@@ -120,4 +120,5 @@ REST_FRAMEWORK = {
 }
 
 # Service URLs
-BOOK_SERVICE_URL = os.environ.get('BOOK_SERVICE_URL', 'http://localhost:8002')
+BOOK_SERVICE_URL = os.environ.get('BOOK_SERVICE_URL', 'http://localhost:8006')
+RECOMMENDER_SERVICE_URL = os.environ.get('RECOMMENDER_SERVICE_URL', 'http://localhost:8012')
