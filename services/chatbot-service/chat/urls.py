@@ -21,6 +21,7 @@ urlpatterns = [
 
     # Admin / Sync
     path('sync-books/', views.sync_books, name='sync-books'),
+    path('webhook/book-updated/', views.webhook_book_updated, name='webhook-book-updated'),
     path('rag-stats/', views.rag_stats, name='rag-stats'),
 
     # Health

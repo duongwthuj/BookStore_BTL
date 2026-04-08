@@ -144,6 +144,23 @@ class VectorStore:
         )
         logger.info(f"Deleted points for source: {source_id}")
 
+    def delete_by_book_id(self, book_id: str):
+        """Delete all points for a specific book."""
+        self.client.delete(
+            collection_name=self.collection_name,
+            points_selector=FilterSelector(
+                filter=Filter(
+                    must=[
+                        FieldCondition(
+                            key="book_id",
+                            match=MatchValue(value=str(book_id)),
+                        )
+                    ]
+                )
+            ),
+        )
+        logger.info(f"Deleted vectors for book_id: {book_id}")
+
     def get_collection_info(self) -> Dict:
         """Get collection statistics."""
         try:

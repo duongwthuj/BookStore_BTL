@@ -16,7 +16,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Pre-download embedding model
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('dangvantuan/vietnamese-document-embedding')" || true
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('dangvantuan/vietnamese-document-embedding', trust_remote_code=True)" || true
 
 # Copy project
 COPY . .
