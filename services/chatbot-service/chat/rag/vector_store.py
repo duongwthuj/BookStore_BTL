@@ -107,9 +107,9 @@ class VectorStore:
                 ]
             )
 
-        results = self.client.search(
+        results = self.client.query_points(
             collection_name=self.collection_name,
-            query_vector=query_embedding,
+            query=query_embedding,
             limit=top_k,
             score_threshold=score_threshold,
             query_filter=query_filter,
@@ -124,7 +124,7 @@ class VectorStore:
                     k: v for k, v in hit.payload.items() if k != "content"
                 },
             }
-            for hit in results
+            for hit in results.points
         ]
 
     def delete_by_source(self, source_id: str):
@@ -151,7 +151,6 @@ class VectorStore:
             return {
                 "name": self.collection_name,
                 "points_count": info.points_count,
-                "vectors_count": info.vectors_count,
                 "status": info.status.value,
             }
         except Exception as e:

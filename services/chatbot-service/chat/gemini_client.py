@@ -116,22 +116,8 @@ class GeminiClient:
             }
 
     def health_check(self) -> bool:
-        """Check if Gemini API is available."""
-        if not self.api_key:
-            return False
-        try:
-            # Simple test request
-            response = requests.post(
-                f"{self.api_url}?key={self.api_key}",
-                json={
-                    "contents": [{"parts": [{"text": "hi"}]}],
-                    "generationConfig": {"maxOutputTokens": 10}
-                },
-                timeout=10
-            )
-            return response.status_code == 200
-        except Exception:
-            return False
+        """Check if Gemini API key is configured."""
+        return bool(self.api_key)
 
 
 # Singleton instance
