@@ -121,17 +121,25 @@ class DocumentProcessor:
         """Fetch all books from book-service and index them."""
         import requests
 
+        books = []
+        url = f"{settings.BOOK_SERVICE_URL}/api/books/"
+        params = {"page_size": 200}
+
         try:
-            response = requests.get(
-                f"{settings.BOOK_SERVICE_URL}/api/books/",
-                params={"page_size": 1000},
-                timeout=30,
-            )
-            response.raise_for_status()
-            data = response.json()
-            books = data.get("results", data) if isinstance(data, dict) else data
-            if not isinstance(books, list):
-                books = []
+            while url:
+                response = requests.get(url, params=params, timeout=30)
+                response.raise_for_status()
+                data = response.json()
+
+                if isinstance(data, dict) and "results" in data:
+                    books.extend(data["results"])
+                    url = data.get("next")
+                    params = {}  # next URL already has params
+                elif isinstance(data, list):
+                    books.extend(data)
+                    url = None
+                else:
+                    url = None
         except Exception as e:
             logger.error(f"Failed to fetch books: {e}")
             return {"success": False, "error": str(e)}
