@@ -9,6 +9,7 @@ from django.db.models import Q
 from .models import Book
 from .serializers import BookSerializer, BookListSerializer, StockUpdateSerializer
 from .filters import BookFilter
+from .webhook import notify_book_created, notify_book_updated, notify_book_deleted
 
 
 class BookViewSet(viewsets.ModelViewSet):
@@ -33,6 +34,19 @@ class BookViewSet(viewsets.ModelViewSet):
         if self.action == 'list':
             return BookListSerializer
         return BookSerializer
+
+    def perform_create(self, serializer):
+        book = serializer.save()
+        notify_book_created(BookSerializer(book).data)
+
+    def perform_update(self, serializer):
+        book = serializer.save()
+        notify_book_updated(BookSerializer(book).data)
+
+    def perform_destroy(self, instance):
+        book_id = instance.id
+        instance.delete()
+        notify_book_deleted(book_id)
 
     @action(detail=True, methods=['put'], url_path='stock')
     def update_stock(self, request, pk=None):

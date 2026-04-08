@@ -107,9 +107,9 @@ class VectorStore:
                 ]
             )
 
-        results = self.client.search(
+        results = self.client.query_points(
             collection_name=self.collection_name,
-            query_vector=query_embedding,
+            query=query_embedding,
             limit=top_k,
             score_threshold=score_threshold,
             query_filter=query_filter,
@@ -124,7 +124,7 @@ class VectorStore:
                     k: v for k, v in hit.payload.items() if k != "content"
                 },
             }
-            for hit in results
+            for hit in results.points
         ]
 
     def delete_by_source(self, source_id: str):
@@ -144,6 +144,23 @@ class VectorStore:
         )
         logger.info(f"Deleted points for source: {source_id}")
 
+    def delete_by_book_id(self, book_id: str):
+        """Delete all points for a specific book."""
+        self.client.delete(
+            collection_name=self.collection_name,
+            points_selector=FilterSelector(
+                filter=Filter(
+                    must=[
+                        FieldCondition(
+                            key="book_id",
+                            match=MatchValue(value=str(book_id)),
+                        )
+                    ]
+                )
+            ),
+        )
+        logger.info(f"Deleted vectors for book_id: {book_id}")
+
     def get_collection_info(self) -> Dict:
         """Get collection statistics."""
         try:
@@ -151,7 +168,6 @@ class VectorStore:
             return {
                 "name": self.collection_name,
                 "points_count": info.points_count,
-                "vectors_count": info.vectors_count,
                 "status": info.status.value,
             }
         except Exception as e:

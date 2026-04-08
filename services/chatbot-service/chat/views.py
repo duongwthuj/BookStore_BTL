@@ -306,7 +306,7 @@ def document_detail(request, doc_id):
 @api_view(['POST'])
 def sync_books(request):
     """
-    POST /chat/sync-books/ - Sync books from book-service to vector store
+    POST /chat/sync-books/ - Sync all books from book-service to vector store
     """
     _, _, document_processor, _, _ = _get_rag_modules()
     result = document_processor.sync_books_from_service()
@@ -314,6 +314,52 @@ def sync_books(request):
     if result['success']:
         return Response(result)
     return Response(result, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+@api_view(['POST'])
+def webhook_book_updated(request):
+    """
+    POST /chat/webhook/book-updated/ - Webhook for book create/update/delete events.
+
+    Called by book-service when a book is created, updated, or deleted.
+
+    Body: {"action": "created|updated|deleted", "book": {...}}
+    """
+    action = request.data.get('action')
+    book = request.data.get('book', {})
+    book_id = request.data.get('book_id') or book.get('id')
+
+    if not action:
+        return Response(
+            {"success": False, "error": "'action' is required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    _, _, document_processor, _, _ = _get_rag_modules()
+
+    if action in ('created', 'updated'):
+        if not book:
+            return Response(
+                {"success": False, "error": "'book' data is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        result = document_processor.upsert_single_book(book)
+    elif action == 'deleted':
+        if not book_id:
+            return Response(
+                {"success": False, "error": "'book_id' is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        result = document_processor.delete_single_book(str(book_id))
+    else:
+        return Response(
+            {"success": False, "error": f"Unknown action: {action}"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if result['success']:
+        return Response(result)
+    return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
@@ -347,7 +393,11 @@ def health(request):
     except Exception as e:
         rag_status["error"] = str(e)
 
-    all_healthy = gemini_ok and rag_status.get("qdrant") == "connected"
+    all_healthy = (
+        gemini_ok
+        and rag_status.get("qdrant") == "connected"
+        and rag_status.get("mongodb") == "connected"
+    )
 
     return Response({
         "status": "healthy" if all_healthy else "degraded",

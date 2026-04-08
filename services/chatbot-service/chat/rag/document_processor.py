@@ -184,6 +184,50 @@ class DocumentProcessor:
             "message": f"Successfully synced {len(texts)} books",
         }
 
+    def upsert_single_book(self, book: Dict) -> Dict:
+        """Add or update a single book in the vector store."""
+        book_id = str(book.get("id", ""))
+        if not book_id:
+            return {"success": False, "error": "Book ID is required"}
+
+        book_text = self._build_book_text(book)
+        if len(book_text.strip()) < 20:
+            return {"success": False, "error": "Book text too short"}
+
+        # Delete existing vectors for this book
+        try:
+            vector_store.delete_by_book_id(book_id)
+        except Exception:
+            pass
+
+        metadata = {
+            "source_id": "book_catalog",
+            "source_type": "book",
+            "source_title": book.get("title", "Unknown"),
+            "book_id": book_id,
+            "author": book.get("author", ""),
+            "price": str(book.get("price", "")),
+            "category": book.get("category_name", book.get("category", "")),
+        }
+
+        embedding = embedding_service.embed_text(book_text)
+        point_ids = vector_store.upsert_documents(
+            [book_text], [embedding], [metadata]
+        )
+
+        logger.info(f"Upserted book '{book.get('title')}' (ID: {book_id})")
+        return {"success": True, "book_id": book_id, "point_ids": point_ids}
+
+    def delete_single_book(self, book_id: str) -> Dict:
+        """Remove a single book from the vector store."""
+        try:
+            vector_store.delete_by_book_id(book_id)
+            logger.info(f"Deleted book vectors for ID: {book_id}")
+            return {"success": True, "book_id": book_id}
+        except Exception as e:
+            logger.error(f"Failed to delete book {book_id}: {e}")
+            return {"success": False, "error": str(e)}
+
     def _build_book_text(self, book: Dict) -> str:
         """Build searchable text representation of a book."""
         parts = []
