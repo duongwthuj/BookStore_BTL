@@ -12,17 +12,9 @@ class ContextBuilder:
         search_results: List[Dict],
         max_length: int = 4000,
     ) -> Dict:
-        """
-        Build context string from search results.
-
-        Returns dict with 'context_text', 'sources', 'avg_score'.
-        """
+        """Build context string from vector search results."""
         if not search_results:
-            return {
-                "context_text": "",
-                "sources": [],
-                "avg_score": 0.0,
-            }
+            return {"context_text": "", "sources": [], "avg_score": 0.0}
 
         context_parts = []
         sources = []
@@ -34,7 +26,6 @@ class ContextBuilder:
             score = result.get("score", 0)
             metadata = result.get("metadata", {})
 
-            # Check length limit
             if current_length + len(content) > max_length:
                 remaining = max_length - current_length
                 if remaining > 100:
@@ -51,41 +42,46 @@ class ContextBuilder:
                 "score": round(score, 3),
                 "source_type": metadata.get("source_type", "unknown"),
             }
-            # Only include optional fields if they have values
             for key in ("book_id", "author", "price"):
                 val = metadata.get(key)
                 if val:
                     source_entry[key] = val
             sources.append(source_entry)
-
             total_score += score
 
-        context_text = "\n\n".join(context_parts)
-        avg_score = total_score / len(sources) if sources else 0
-
         return {
-            "context_text": context_text,
+            "context_text": "\n\n".join(context_parts),
             "sources": sources,
-            "avg_score": round(avg_score, 3),
+            "avg_score": round(total_score / len(sources), 3) if sources else 0,
         }
 
     def build_chat_prompt(
         self,
         user_message: str,
         context_text: str,
+        structured_context: str = "",
+        stats_summary: str = "",
         conversation_history: List[Dict] = None,
     ) -> str:
-        """Build the final prompt with RAG context and conversation history."""
+        """Build the final prompt combining all context layers."""
         parts = []
 
+        # Stats summary (always present — factual grounding)
+        if stats_summary:
+            parts.append(stats_summary)
+
+        # Structured data from smart query (aggregations, sorting)
+        if structured_context:
+            parts.append(f"[Dữ liệu chính xác từ hệ thống]\n{structured_context}")
+
+        # RAG vector search results
         if context_text:
             parts.append(
                 "Thông tin tham khảo từ cơ sở dữ liệu:\n"
-                "---\n"
-                f"{context_text}\n"
-                "---"
+                f"---\n{context_text}\n---"
             )
 
+        # Conversation history (last 6 messages)
         if conversation_history:
             history_text = []
             for msg in conversation_history[-6:]:
@@ -97,7 +93,6 @@ class ContextBuilder:
                 )
 
         parts.append(f"Khách hàng: {user_message}")
-
         return "\n\n".join(parts)
 
 

@@ -8,6 +8,7 @@ from .embedding_service import embedding_service
 from .vector_store import vector_store
 from .context_builder import context_builder
 from .mongo_store import mongo_store
+from .book_query import detect_query_intent, fetch_for_intent, build_stats_summary
 
 logger = logging.getLogger(__name__)
 
@@ -22,11 +23,9 @@ class RAGService:
         top_k: int = None,
     ) -> Dict:
         """
-        Run RAG pipeline: embed query -> search vectors -> build context.
-
-        Returns dict with 'context_text', 'sources', 'conversation_history', 'prompt'.
+        Run RAG pipeline: smart query detection -> embed -> search -> build context.
         """
-        # 1. Get conversation history if session exists
+        # 1. Conversation history
         conversation_history = []
         if session_id:
             try:
@@ -34,38 +33,35 @@ class RAGService:
             except Exception as e:
                 logger.warning(f"Failed to get conversation history: {e}")
 
-        # 2. Embed the query
+        # 2. Smart query: detect aggregation intent and fetch structured data
+        structured_context = ""
+        intent = detect_query_intent(user_message)
+        if intent:
+            structured_context = fetch_for_intent(intent)
+
+        # 3. Always include store stats summary for factual grounding
+        stats_summary = build_stats_summary()
+
+        # 4. Embed the query and search vector store (semantic search)
+        search_results = []
         try:
             query_embedding = embedding_service.embed_text(user_message)
-        except Exception as e:
-            logger.error(f"Embedding failed: {e}")
-            return {
-                "context_text": "",
-                "sources": [],
-                "conversation_history": conversation_history,
-                "prompt": user_message,
-            }
-
-        # 3. Search vector store
-        try:
             search_results = vector_store.search(
-                query_embedding=query_embedding,
-                top_k=top_k,
+                query_embedding=query_embedding, top_k=top_k,
             )
+            search_results = self._deduplicate(search_results)
         except Exception as e:
             logger.error(f"Vector search failed: {e}")
-            search_results = []
 
-        # 4. Deduplicate results (max 2 per source)
-        search_results = self._deduplicate(search_results)
-
-        # 5. Build context
+        # 5. Build context from search results
         context_data = context_builder.build_context(search_results)
 
-        # 6. Build final prompt
+        # 6. Build final prompt with all context layers
         prompt = context_builder.build_chat_prompt(
             user_message=user_message,
             context_text=context_data["context_text"],
+            structured_context=structured_context,
+            stats_summary=stats_summary,
             conversation_history=conversation_history,
         )
 
