@@ -60,6 +60,7 @@ class ContextBuilder:
         user_message: str,
         context_text: str,
         structured_context: str = "",
+        related_context: str = "",
         stats_summary: str = "",
         conversation_history: List[Dict] = None,
     ) -> str:
@@ -80,6 +81,10 @@ class ContextBuilder:
                 "Thông tin tham khảo từ cơ sở dữ liệu:\n"
                 f"---\n{context_text}\n---"
             )
+
+        # KB-lite: related books (same author, same category)
+        if related_context:
+            parts.append(f"[Sách liên quan gợi ý]\n{related_context}")
 
         # Conversation history (last 6 messages)
         if conversation_history:

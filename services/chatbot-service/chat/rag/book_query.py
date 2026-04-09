@@ -142,6 +142,63 @@ def build_stats_summary() -> str:
     return "\n".join(parts)
 
 
+def enrich_with_related_books(search_results: list) -> str:
+    """
+    KB-lite: given RAG search results, find related books via book-service API.
+    Looks up same author and same category for the top-scored book result.
+    """
+    # Find the best book hit from search results
+    best_book = None
+    for result in search_results:
+        meta = result.get("metadata", {})
+        if meta.get("source_type") == "book" and meta.get("book_id"):
+            best_book = meta
+            break
+
+    if not best_book:
+        return ""
+
+    url = f"{settings.BOOK_SERVICE_URL}/api/books/"
+    book_id = best_book.get("book_id")
+    author = best_book.get("author", "")
+    sections = []
+
+    try:
+        # Same author (exclude current book)
+        if author:
+            author_books = _fetch(url, {"author": author, "page_size": 5})
+            author_books = [b for b in author_books if str(b.get("id")) != str(book_id)]
+            if author_books:
+                sections.append(_format_list(f"Sách cùng tác giả {author}", author_books[:3]))
+
+        # Same category
+        detail = _fetch_detail(book_id)
+        if detail:
+            cat_id = detail.get("category_id")
+            if cat_id:
+                cat_books = _fetch(url, {"category_id": cat_id, "page_size": 6})
+                cat_books = [b for b in cat_books if str(b.get("id")) != str(book_id)]
+                if cat_books:
+                    sections.append(_format_list("Sách cùng thể loại", cat_books[:3]))
+    except Exception as e:
+        logger.warning(f"KB-lite enrichment failed: {e}")
+
+    return "\n\n".join(sections)
+
+
+def _fetch_detail(book_id: str) -> dict:
+    """Fetch single book detail."""
+    try:
+        resp = requests.get(
+            f"{settings.BOOK_SERVICE_URL}/api/books/{book_id}/", timeout=5
+        )
+        if resp.status_code == 200:
+            return resp.json()
+    except Exception:
+        pass
+    return {}
+
+
 # ---- helpers ----
 
 def _fetch(url: str, params: dict) -> list:

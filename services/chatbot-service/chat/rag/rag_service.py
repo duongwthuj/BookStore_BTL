@@ -8,7 +8,9 @@ from .embedding_service import embedding_service
 from .vector_store import vector_store
 from .context_builder import context_builder
 from .mongo_store import mongo_store
-from .book_query import detect_query_intent, fetch_for_intent, build_stats_summary
+from .book_query import (
+    detect_query_intent, fetch_for_intent, build_stats_summary, enrich_with_related_books,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -56,11 +58,20 @@ class RAGService:
         # 5. Build context from search results
         context_data = context_builder.build_context(search_results)
 
-        # 6. Build final prompt with all context layers
+        # 6. KB-lite: enrich with related books if a specific book was found
+        related_context = ""
+        if search_results and not intent:
+            try:
+                related_context = enrich_with_related_books(search_results)
+            except Exception as e:
+                logger.warning(f"KB enrichment failed: {e}")
+
+        # 7. Build final prompt with all context layers
         prompt = context_builder.build_chat_prompt(
             user_message=user_message,
             context_text=context_data["context_text"],
             structured_context=structured_context,
+            related_context=related_context,
             stats_summary=stats_summary,
             conversation_history=conversation_history,
         )
