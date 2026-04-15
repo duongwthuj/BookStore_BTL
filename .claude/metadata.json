@@ -1,0 +1,20 @@
+{
+  "name": "theonekit-core",
+  "version": "1.60.1",
+  "buildDate": "2026-04-14T14:37:09.882Z",
+  "repository": "The1Studio/theonekit-core",
+  "deletions": [
+    "rules/skill-activation.md",
+    "skills/t1k-kit-audit/SKILL.md",
+    "skills/t1k-kit-migrate/SKILL.md",
+    "skills/t1k-kit-release/SKILL.md",
+    "skills/t1k-kit-scaffold/SKILL.md",
+    "skills/t1k-kit-sync/SKILL.md",
+    "skills/t1k-kit-test/SKILL.md",
+    "skills/t1k-kit-validate/SKILL.md",
+    "skills/t1k-skill-creator/references/creation-workflow.md",
+    "skills/t1k-skill-creator/references/design-patterns.md",
+    "skills/t1k-skill-creator/references/skill-anatomy.md",
+    "skills/t1k-skill-creator/references/writing-guide.md"
+  ]
+}
