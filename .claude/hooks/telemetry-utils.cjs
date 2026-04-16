@@ -128,8 +128,8 @@ const T1K = {
     EXECUTION_TRACE: 'executionTrace',
     HOOK_LOGGING: 'hookLogging',
   },
-  // Log tags emitted by hooks and parsed by AI per rules/cli-auto-update.md
-  // and rules/error-recovery.md. Tags are the stable contract — do NOT
+  // Log tags emitted by hooks and parsed by AI per skills/t1k-kit/references/cli-auto-update.md
+  // and skills/t1k-fix/references/error-recovery.md. Tags are the stable contract — do NOT
   // change spelling without updating all rule docs that match on them.
   TAGS: {
     CLI_UPDATE: '[t1k:cli-update]',

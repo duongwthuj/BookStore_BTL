@@ -27,10 +27,10 @@ End-to-end feature implementation. Routes to the registered implementer agent fo
 **Optional flags:** `--interactive` (default) | `--fast` (skip research) | `--parallel` (multi-agent) | `--no-test` | `--auto` (auto-approve) | `--tdd` (test-driven: write tests first, implement, verify)
 
 ## Agent Routing
-Follow protocol: `rules/routing-protocol.md` — role: `implementer`
+Follow protocol: `skills/t1k-cook/references/routing-protocol.md` — role: `implementer`
 
 ## Skill Activation
-Follow protocol: `rules/activation-protocol.md`
+Follow protocol: `skills/t1k-cook/references/activation-protocol.md`
 
 <HARD-GATE>
 Do NOT write implementation code until a plan exists and has been reviewed.

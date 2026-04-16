@@ -32,7 +32,7 @@ T1K Context:
 ## How to Build
 
 1. Read `.claude/metadata.json` → extract kit name, version, installedModules
-2. Resolve agent role via `rules/routing-protocol.md`
+2. Resolve agent role via `skills/t1k-cook/references/routing-protocol.md`
 3. Read module's `.t1k-manifest.json` → extract file list → derive ownership globs
 4. Read module's activation fragment → extract skill names
 5. Get current git branch: `git branch --show-current`

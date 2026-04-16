@@ -107,9 +107,11 @@ try {
   const warned = new Set();
   let count = 0;
   const MAX_WARNINGS = 3;
+  const MIN_KEYWORD_LENGTH = 5; // skip short generic keywords (e.g., "task", "dots")
 
   for (const [keyword, modName] of keywordMap) {
     if (count >= MAX_WARNINGS) break;
+    if (keyword.length < MIN_KEYWORD_LENGTH) continue; // too short, likely false positive
     if (installed.has(modName)) continue; // already installed
     if (warned.has(modName)) continue; // already warned
     // Use word boundary matching to avoid false positives (e.g., "unit" in "unity")

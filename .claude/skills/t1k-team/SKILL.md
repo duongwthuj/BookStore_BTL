@@ -22,7 +22,7 @@ Orchestrate parallel Claude Code Agent Teams with T1K infrastructure: registry-r
 
 ## Agent Routing
 
-Follow protocol: `rules/routing-protocol.md`
+Follow protocol: `skills/t1k-cook/references/routing-protocol.md`
 Templates resolve roles dynamically: `researcher`, `implementer`, `reviewer`, `debugger`, `tester`, `planner`
 
 ## Templates
@@ -49,10 +49,10 @@ Templates resolve roles dynamically: `researcher`, `implementer`, `reviewer`, `d
 ## Pre-flight Protocol (MANDATORY)
 
 1. **Call `TeamCreate`** — if it fails, STOP: "Agent Teams requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`."
-2. **Resolve roles** — follow `rules/routing-protocol.md`
-3. **Detect modules** — follow `rules/module-detection-protocol.md`
+2. **Resolve roles** — follow `skills/t1k-cook/references/routing-protocol.md`
+3. **Detect modules** — follow `skills/t1k-modules/references/module-detection-protocol.md`
 4. **Derive file ownership** — `references/manifest-ownership-resolution.md`
-5. **Build skill injection** — follow `rules/subagent-injection-protocol.md`
+5. **Build skill injection** — follow `skills/t1k-cook/references/subagent-injection-protocol.md`
 6. **Cost warning** — inform user of teammate count and estimated token cost
 
 Every teammate spawn prompt MUST include the T1K Context Block: `references/t1k-context-block.md`

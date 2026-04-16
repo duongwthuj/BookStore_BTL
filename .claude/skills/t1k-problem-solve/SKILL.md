@@ -15,7 +15,7 @@ protected: true
 
 Systematic approaches for different types of stuck-ness. Each technique targets specific problem patterns.
 
-**Auto-activation:** Triggered by T1K error recovery when `/t1k:debug` or `/t1k:fix` fails 3+ times on the same issue. See `rules/error-recovery.md`.
+**Auto-activation:** Triggered by T1K error recovery when `/t1k:debug` or `/t1k:fix` fails 3+ times on the same issue. See `skills/t1k-fix/references/error-recovery.md`.
 
 **MCP integration:** If `mcp__sequential-thinking__sequentialthinking` is available, use it for structured step-by-step analysis within each technique. Fall back to pure markdown methodology if MCP not connected.
 

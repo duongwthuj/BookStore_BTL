@@ -71,7 +71,7 @@ Also read ALL `.claude/t1k-config-*.json` files to list any extra commands regis
 
 ## Installed Modules (Dynamic)
 
-Follow protocol: `rules/module-detection-protocol.md`
+Follow protocol: `skills/t1k-modules/references/module-detection-protocol.md`
 
 If `installedModules` present in `.claude/metadata.json`, for each installed module:
 - Module name, version (from `installedModules[name].version`), kit, required/optional status

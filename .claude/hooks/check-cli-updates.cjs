@@ -18,8 +18,8 @@
  *
  * Safeguards:
  *   - Opt-out: features.autoUpdate: false  (shared with check-kit-updates.cjs)
- *   - Cache:   24h TTL at ~/.claude/.cli-update-check-cache
  *   - Log:     ~/.claude/.cli-update.log (rolling, capped at ~100KB)
+ *   - Coordination: skips if check-kit-updates already spawned `t1k update --yes`
  *   - Self-update guard: skips when CWD git remote matches CLI repo
  *   - Fail-open: any error exits 0 without blocking the session
  *   - Dry-run:  T1K_CLI_UPDATE_NOOP=1 logs intent without spawning update
@@ -31,7 +31,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync, spawn } = require('child_process');
 
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+const os = require('os');
 const LOG_MAX_BYTES = 100 * 1024; // 100KB rolling log
 
 function parseSemver(v) {
@@ -149,18 +149,21 @@ function matchesCwdRemote(repo) {
     const cliConfig = readCliConfig(claudeDir, T1K);
     if (!cliConfig) return process.exit(0);
 
-    // Cache is global-scoped (CLI is installed once per user)
-    const cacheDir = home ? path.join(home, '.claude') : claudeDir;
-    try { fs.mkdirSync(cacheDir, { recursive: true }); } catch { /* ok */ }
-    const cacheFile = path.join(cacheDir, '.cli-update-check-cache');
-
-    if (fs.existsSync(cacheFile)) {
-      try {
-        const stamp = fs.readFileSync(cacheFile, 'utf8').trim();
+    // Coordination: if check-kit-updates already spawned `t1k update --yes` (which handles
+    // both CLI + content), skip CLI-only update to avoid redundant work.
+    try {
+      const markerPath = path.join(os.tmpdir(), 't1k-update', 'spawned');
+      if (fs.existsSync(markerPath)) {
+        const stamp = fs.readFileSync(markerPath, 'utf8').trim();
         const age = Date.now() - new Date(stamp).getTime();
-        if (Number.isFinite(age) && age >= 0 && age < CACHE_TTL_MS) return process.exit(0);
-      } catch { /* stale cache file — recheck */ }
-    }
+        // Marker valid for 60s (both hooks fire within same SessionStart)
+        if (Number.isFinite(age) && age >= 0 && age < 60000) {
+          logHook('check-cli-updates', { action: 'skip-kit-handled' });
+          timer.end({ outcome: 'skip-kit-handled' });
+          return process.exit(0);
+        }
+      }
+    } catch { /* marker not found — proceed normally */ }
 
     // Self-update guard: skip if CWD is the CLI repo itself
     if (matchesCwdRemote(cliConfig.repo)) return process.exit(0);
@@ -173,13 +176,13 @@ function matchesCwdRemote(repo) {
 
     const latest = getLatestReleaseVersion(cliConfig.repo);
     if (!latest) {
-      try { fs.writeFileSync(cacheFile, new Date().toISOString()); } catch { /* ok */ }
+      // No cache — check every session
       return process.exit(0);
     }
 
     const cmp = compareSemver(current, latest);
     if (cmp >= 0) {
-      try { fs.writeFileSync(cacheFile, new Date().toISOString()); } catch { /* ok */ }
+      // No cache — check every session
       return process.exit(0);
     }
 
@@ -189,12 +192,13 @@ function matchesCwdRemote(repo) {
       logHook('check-cli-updates', { current: current.raw, latest: latest.raw, action: 'notify-major' });
       timer.end({ outcome: 'notify-major', current: current.raw, latest: latest.raw });
       console.log(`${T1K.TAGS.CLI_MAJOR} CLI ${current.raw} → ${latest.raw} (major). features.${T1K.FEATURES.AUTO_UPDATE_MAJOR} is false — run 't1k update' manually to review breaking changes.`);
-      try { fs.writeFileSync(cacheFile, new Date().toISOString()); } catch { /* ok */ }
+      // No cache — check every session
       return process.exit(0);
     }
 
     // Minor/patch (or major with autoUpdateMajor:true) → background auto-update
-    const logPath = path.join(cacheDir, '.cli-update.log');
+    const logDir = home ? path.join(home, '.claude') : claudeDir;
+    const logPath = path.join(logDir, '.cli-update.log');
     rotateLog(logPath);
 
     // --cli-only flag shipped in CLI 2.5.0 — version-gate to avoid polluting
@@ -251,7 +255,6 @@ function matchesCwdRemote(repo) {
     logHook('check-cli-updates', { current: current.raw, latest: latest.raw, action: noop ? 'update-noop' : 'update-background' });
     timer.end({ outcome: 'update', current: current.raw, latest: latest.raw });
 
-    try { fs.writeFileSync(cacheFile, new Date().toISOString()); } catch { /* ok */ }
     process.exit(0);
   } catch (err) {
     try { require('./hook-logger.cjs').logHookCrash('check-cli-updates', err); } catch { /* ok */ }

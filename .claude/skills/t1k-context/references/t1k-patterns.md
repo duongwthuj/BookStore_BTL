@@ -9,7 +9,7 @@ protected: true
 
 ## Skill Injection as Context Partitioning
 
-Subagent-injection-protocol (`rules/subagent-injection-protocol.md`) is context partitioning in practice:
+Subagent-injection-protocol (`skills/t1k-cook/references/subagent-injection-protocol.md`) is context partitioning in practice:
 - Each spawned subagent gets ONLY its module's skills — not all installed skills
 - Module scoping = attention management: restricts context to relevant domain
 - Prevents cross-module context bleed and distraction

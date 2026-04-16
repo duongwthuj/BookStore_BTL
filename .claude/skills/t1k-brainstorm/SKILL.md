@@ -18,11 +18,11 @@ Context-aware brainstorming. Routes to registered `brainstormer` agent via routi
 **Principles:** YAGNI, KISS, DRY | Token efficiency | Concise reports
 
 ## Agent Routing
-Follow protocol: `rules/routing-protocol.md`
+Follow protocol: `skills/t1k-cook/references/routing-protocol.md`
 This command uses role: `brainstormer`
 
 ## Skill Activation
-Follow protocol: `rules/activation-protocol.md`
+Follow protocol: `skills/t1k-cook/references/activation-protocol.md`
 
 <HARD-GATE>
 Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it.
@@ -113,7 +113,7 @@ When brainstorming, check inventory for:
 - If proposing new skills, identify which module they belong to
 
 ## Subagent Skill Injection (if installedModules present in metadata.json)
-Follow protocol: `rules/subagent-injection-protocol.md`
+Follow protocol: `skills/t1k-cook/references/subagent-injection-protocol.md`
 Before spawning brainstormer agent, inject module context.
 
 ## Critical Constraints

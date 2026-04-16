@@ -36,7 +36,7 @@ are resolved automatically using semver ranges.
 
 ## Module State Detection
 
-Follow protocol: `rules/module-detection-protocol.md`
+Follow protocol: `skills/t1k-modules/references/module-detection-protocol.md`
 
 Detect installed kits from MULTIPLE signals:
 1. `metadata.json` → `installedModules` or `kits` key

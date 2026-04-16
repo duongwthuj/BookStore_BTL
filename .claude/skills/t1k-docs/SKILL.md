@@ -33,7 +33,7 @@ docs/
 ```
 
 ## Agent Routing
-Follow protocol: `rules/routing-protocol.md`
+Follow protocol: `skills/t1k-cook/references/routing-protocol.md`
 This command uses role: `docs-manager`
 
 ## References

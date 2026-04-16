@@ -52,7 +52,7 @@ Mode comparison and `--deep` vs `--hard` details: `references/workflow-modes.md`
 After plan creation, output: `/t1k:cook {plan-path}`
 
 ## Agent Routing
-Follow protocol: `rules/routing-protocol.md`
+Follow protocol: `skills/t1k-cook/references/routing-protocol.md`
 This command uses role: `planner`
 
 ## Skill Inventory Injection (if `installedModules` present in metadata.json)

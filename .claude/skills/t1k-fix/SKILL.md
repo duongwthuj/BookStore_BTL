@@ -33,12 +33,12 @@ User override: `--quick` mode allows fast scout-diagnose-fix cycle for trivial i
 
 ## Agent Routing
 
-Follow protocol: `rules/routing-protocol.md`
+Follow protocol: `skills/t1k-cook/references/routing-protocol.md`
 This command uses roles: `implementer`, `debugger`
 
 ## Skill Activation
 
-Follow protocol: `rules/activation-protocol.md`
+Follow protocol: `skills/t1k-cook/references/activation-protocol.md`
 
 ## Workflow Steps
 
@@ -75,7 +75,7 @@ Full activation matrix: `references/skill-activation-matrix.md`
 
 ## Subagent Skill Injection
 
-Follow protocol: `rules/subagent-injection-protocol.md`
+Follow protocol: `skills/t1k-cook/references/subagent-injection-protocol.md`
 
 ## Security
 
