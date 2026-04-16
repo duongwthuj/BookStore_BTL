@@ -86,6 +86,20 @@ services:
       timeout: 5s
       retries: 5
 
+  product-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: product_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - product_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   cart-db:
     image: postgres:15-alpine
     environment:
@@ -245,6 +259,19 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgres@book-db:5432/book_db
       CATALOG_SERVICE_URL: http://catalog-service:8000
+      CHATBOT_SERVICE_URL: http://chatbot-service:8000
+      DEBUG: "True"
+    restart: unless-stopped
+
+  product-service:
+    build: ./services/product-service
+    ports:
+      - "8015:8000"
+    depends_on:
+      product-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@product-db:5432/product_db
       CHATBOT_SERVICE_URL: http://chatbot-service:8000
       DEBUG: "True"
     restart: unless-stopped
@@ -444,6 +471,7 @@ volumes:
   manager_db_data:
   catalog_db_data:
   book_db_data:
+  product_db_data:
   cart_db_data:
   order_db_data:
   payment_db_data:

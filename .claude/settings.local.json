@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /c/Users/ADMIN/Desktop/BookStore_BTL/services/product-service/product_service)",
+      "Bash(mkdir -p /c/Users/ADMIN/Desktop/BookStore_BTL/services/product-service/modules/catalog/domain/entities)",
+      "Bash(mkdir -p /c/Users/ADMIN/Desktop/BookStore_BTL/services/product-service/modules/catalog/domain/value_objects)",
+      "Bash(mkdir -p /c/Users/ADMIN/Desktop/BookStore_BTL/services/product-service/modules/catalog/domain/repositories)",
+      "Bash(mkdir -p /c/Users/ADMIN/Desktop/BookStore_BTL/services/product-service/modules/catalog/application/services)",
+      "Bash(python3 -c ' *)",
+      "Bash(node *)",
+      "Bash(python3 /c/Users/ADMIN/Desktop/BookStore_BTL/services/product-service/modules/catalog/management/commands/write_seed.py)",
+      "Bash(python3 -)",
+      "Bash(python *)"
+    ]
+  }
+}
