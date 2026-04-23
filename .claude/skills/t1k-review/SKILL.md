@@ -17,7 +17,7 @@ Adversarial code review with technical rigor, evidence-based claims, and verific
 
 ## Agent Routing
 
-Follow protocol: `rules/routing-protocol.md`
+Follow protocol: `skills/t1k-cook/references/routing-protocol.md`
 This command uses role: `reviewer`
 
 ## Input Modes
@@ -40,7 +40,7 @@ Verify before implementing. Ask before assuming. Evidence before claims.
 
 ## Skill Activation
 
-Follow protocol: `rules/activation-protocol.md`
+Follow protocol: `skills/t1k-cook/references/activation-protocol.md`
 
 ## Practices
 
@@ -76,7 +76,7 @@ Project-type checklists: `references/checklists/base.md`, `references/checklists
 
 ## Subagent Skill Injection
 
-Follow protocol: `rules/subagent-injection-protocol.md`
+Follow protocol: `skills/t1k-cook/references/subagent-injection-protocol.md`
 
 ## Security
 

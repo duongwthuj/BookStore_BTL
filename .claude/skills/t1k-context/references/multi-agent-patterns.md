@@ -39,7 +39,7 @@ T1K uses a registry-routed supervisor pattern. The AI (orchestrator) reads routi
 
 **Agent fallback chain**: module agent (p91+) → kit agent (p90) → core agent (p10)
 
-See `rules/routing-protocol.md` for resolution algorithm.
+See `skills/t1k-cook/references/routing-protocol.md` for resolution algorithm.
 
 ## Context Injection Pattern (T1K Subagent Injection Protocol)
 
@@ -56,7 +56,7 @@ Module context:
 
 **Critical**: inject only the target module's skills. Do NOT dump all installed skills — that defeats context isolation.
 
-See `rules/subagent-injection-protocol.md` for full steps.
+See `skills/t1k-cook/references/subagent-injection-protocol.md` for full steps.
 
 ## T1K Team Pattern (Parallel Agents)
 
@@ -123,7 +123,7 @@ Strategy layer → Planning layer → Execution layer.
 5. Design clear handoffs with explicit ownership
 6. Validate results between agent boundaries
 7. Implement circuit breakers (3+ failures → escalate)
-8. Context isolation protocol: `rules/subagent-injection-protocol.md`
+8. Context isolation protocol: `skills/t1k-cook/references/subagent-injection-protocol.md`
 
 ## Related
 

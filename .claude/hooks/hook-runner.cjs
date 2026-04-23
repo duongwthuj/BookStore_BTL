@@ -111,10 +111,13 @@ try {
 }
 
 try {
+  // SessionStart hooks may do network I/O (kit updates, MCP health checks);
+  // give them 30s. All other hooks keep the default 10s.
+  const isSessionStart = hookName === 'SessionStart';
   execFileSync(process.execPath, [hookPath, ...process.argv.slice(3)], {
     input: stdin,
     stdio: ['pipe', 'inherit', 'inherit'],
-    timeout: 10000,
+    timeout: isSessionStart ? 30000 : 10000,
     cwd: projectRoot,
     windowsHide: true,
     env: {

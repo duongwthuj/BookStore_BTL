@@ -61,7 +61,7 @@ You are a **Scrum Master** who keeps the team moving. You track milestones, esca
 5. `git-manager` — `/t1k:git cm` with conventional commit
 
 **Module-Aware Delegation (if `.claude/metadata.json` has `modules` key):**
-Follow protocol: `rules/subagent-injection-protocol.md`
+Follow protocol: `skills/t1k-cook/references/subagent-injection-protocol.md`
 1. Read `.claude/metadata.json` → identify module scope of current task/phase
 2. Build skill injection block for registry-routed agents
 3. Include in delegation prompt: module name, module skills, kit-wide skills

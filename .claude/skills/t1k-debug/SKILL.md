@@ -22,11 +22,11 @@ Comprehensive framework combining systematic debugging, root cause tracing, defe
 Random fixes waste time and create new bugs. Find root cause, fix at source, validate at every layer, verify before claiming success.
 
 ## Agent Routing
-Follow protocol: `rules/routing-protocol.md`
+Follow protocol: `skills/t1k-cook/references/routing-protocol.md`
 This command uses role: `debugger`
 
 ## Skill Activation
-Follow protocol: `rules/activation-protocol.md`
+Follow protocol: `skills/t1k-cook/references/activation-protocol.md`
 
 ## When to Use
 
@@ -136,7 +136,7 @@ Stop and return to systematic process if thinking:
 **All mean:** Return to systematic process.
 
 ## Subagent Skill Injection (if installedModules present in metadata.json)
-Follow protocol: `rules/subagent-injection-protocol.md`
+Follow protocol: `skills/t1k-cook/references/subagent-injection-protocol.md`
 Before spawning debugger agent, inject module context.
 
 ## Execution Trace (if features.executionTrace enabled)

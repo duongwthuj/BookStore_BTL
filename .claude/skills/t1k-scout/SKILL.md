@@ -21,7 +21,7 @@ Match query keywords against ALL fragments. Activate all matching skills before 
 
 ## Module-Aware Search (if `installedModules` or `modules` present in metadata.json)
 
-Follow protocol: `rules/module-detection-protocol.md`
+Follow protocol: `skills/t1k-modules/references/module-detection-protocol.md`
 
 1. Read `.claude/metadata.json` → installed modules
 2. Annotate each finding with its module: "Found in module: dots-core" or "Found in: kit-wide"

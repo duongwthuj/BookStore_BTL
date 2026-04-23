@@ -18,7 +18,7 @@ protected: true
 
 ## Module Checks (#7–17)
 
-Follow protocol: `rules/module-detection-protocol.md` — skip if no `installedModules` key or no metadata.
+Follow protocol: `skills/t1k-modules/references/module-detection-protocol.md` — skip if no `installedModules` key or no metadata.
 
 | # | Check | Validates |
 |---|---|---|

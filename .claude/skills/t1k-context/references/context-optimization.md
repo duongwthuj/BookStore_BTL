@@ -70,7 +70,7 @@ Each subagent spawned by `/t1k:cook`, `/t1k:fix`, `/t1k:debug` gets:
 
 Coordinator receives only result summaries, not full subagent output.
 
-See `rules/subagent-injection-protocol.md` for the exact injection steps.
+See `skills/t1k-cook/references/subagent-injection-protocol.md` for the exact injection steps.
 
 ## Decision Framework
 

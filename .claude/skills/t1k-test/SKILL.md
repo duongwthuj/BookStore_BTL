@@ -41,11 +41,11 @@ Delegate to the registered tester agent. Never ignore failing tests.
 **NEVER IGNORE FAILING TESTS.** Fix root causes, not symptoms.
 
 ## Agent Routing
-Follow protocol: `rules/routing-protocol.md`
+Follow protocol: `skills/t1k-cook/references/routing-protocol.md`
 This command uses role: `tester`
 
 ## Skill Activation
-Follow protocol: `rules/activation-protocol.md`
+Follow protocol: `skills/t1k-cook/references/activation-protocol.md`
 
 ## Workflow
 
@@ -56,7 +56,7 @@ Follow protocol: `rules/activation-protocol.md`
 5. Report structured results
 
 ## Module Context for Tester (if `installedModules` or `modules` present in metadata.json)
-Follow protocol: `rules/subagent-injection-protocol.md`
+Follow protocol: `skills/t1k-cook/references/subagent-injection-protocol.md`
 Before spawning tester agent, inject:
 - Which module's files are being tested (from `.claude/metadata.json`)
 - Module's test skills if available

@@ -17,7 +17,7 @@ Single command to ship a feature branch. Fully automated — only stops for test
 
 ## Agent Routing
 
-Follow protocol: `rules/routing-protocol.md`
+Follow protocol: `skills/t1k-cook/references/routing-protocol.md`
 This command uses roles: `tester`, `reviewer`, `docs-manager`, `git-manager`
 
 ## Arguments
@@ -82,7 +82,7 @@ PR: https://github.com/org/repo/pull/123 (linked: #42, #43)
 ## Subagent Delegation (MANDATORY)
 
 Steps 4, 5, 8: delegate to registry-routed subagents — do NOT inline.
-Follow protocol: `rules/subagent-injection-protocol.md` if installedModules present.
+Follow protocol: `skills/t1k-cook/references/subagent-injection-protocol.md` if installedModules present.
 
 ## Security
 
