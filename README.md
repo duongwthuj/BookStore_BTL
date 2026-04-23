@@ -43,7 +43,7 @@ A complete e-commerce bookstore application built with microservice architecture
 │ AI Services   │                         │ Support       │
 │ ─────────────│                         │ ─────────────│
 │ • recommender │                         │ • chatbot     │
-│   (Hybrid)    │                         │   (Ollama)    │
+│   (Hybrid)    │                         │ (Gemini + RAG)│
 └───────────────┘                         └───────────────┘
 ```
 
@@ -64,18 +64,24 @@ A complete e-commerce bookstore application built with microservice architecture
 | Ship Service | 8010 | Shipping management |
 | Comment-Rate Service | 8011 | Reviews & Ratings |
 | Recommender Service | 8012 | Book recommendations |
-| Chatbot Service | 8013 | FAQ chatbot (Ollama) |
+| Chatbot Service | 8013 | Chatbot + RAG service |
 | Frontend | 3000 | React application |
 
 ## Tech Stack
 
 - **Backend:** Django REST Framework
 - **Frontend:** React 18 + Tailwind CSS
-- **Database:** PostgreSQL (one per service)
+- **Database:** Dedicated PostgreSQL for most domain services; MongoDB + Qdrant for chatbot/RAG
 - **Authentication:** JWT
 - **Payment:** MoMo Sandbox
-- **AI/Chatbot:** Ollama (llama3.2:1b)
+- **AI/Chatbot:** Gemini + Qdrant + MongoDB + sentence-transformers
 - **Containerization:** Docker & Docker Compose
+
+## Documentation
+
+- `docs/project-structure-and-tech.md` - Tài liệu chi tiết về cấu trúc repo, service map, công nghệ, cú pháp và pattern chính
+- `docs/rag-chatbot-sync.md` - Tài liệu về cơ chế đồng bộ dữ liệu sách sang chatbot/RAG
+- `services/recommender-service/RECOMMENDER_SYSTEM_DOCUMENTATION.md` - Tài liệu chi tiết về hệ thống gợi ý sách
 
 ## Quick Start
 
@@ -89,7 +95,7 @@ A complete e-commerce bookstore application built with microservice architecture
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd bookstore-microservice
+cd BookStore_BTL
 
 # Start all services
 docker-compose up --build
@@ -101,14 +107,10 @@ docker-compose up --build
 
 - **Frontend:** http://localhost:3000
 - **API Gateway:** http://localhost:8000
-- **API Documentation:** http://localhost:8000/api/docs/
 
-### Pull Ollama model (for chatbot)
+### Chatbot runtime note
 
-```bash
-# After services are running, pull the llama model
-docker-compose exec ollama ollama pull llama3.2:1b
-```
+The current codebase and `docker-compose.yml` show the chatbot stack using Gemini, Qdrant, MongoDB, and sentence-transformer embeddings. Some older text in this README may still mention Ollama.
 
 ## Development
 
@@ -126,13 +128,23 @@ python manage.py runserver 8001
 
 ### Environment Variables
 
-Each service uses the following environment variables:
+Common environment variables across many services:
 
 | Variable | Description |
 |----------|-------------|
-| DATABASE_URL | PostgreSQL connection string |
-| JWT_SECRET | Secret key for JWT tokens |
+| DATABASE_URL | PostgreSQL connection string for domain services that use Postgres |
+| JWT_SECRET | Secret key used by authentication/gateway flow |
 | DEBUG | Enable debug mode |
+
+Chatbot/RAG-specific variables:
+| Variable | Description |
+|----------|-------------|
+| GEMINI_API_KEY | API key for Gemini |
+| GEMINI_MODEL | Gemini model name |
+| MONGODB_URL | MongoDB connection string for chatbot data |
+| QDRANT_HOST | Qdrant host |
+| QDRANT_PORT | Qdrant port |
+| EMBEDDING_MODEL | Sentence-transformer embedding model |
 
 Payment service additional variables:
 | Variable | Description |
@@ -142,6 +154,8 @@ Payment service additional variables:
 | MOMO_SECRET_KEY | MoMo secret key |
 | MOMO_REDIRECT_URL | Redirect URL after payment |
 | MOMO_IPN_URL | IPN callback URL |
+
+> Không phải mọi service đều dùng cùng một nhóm biến môi trường. Hãy xem `docker-compose.yml` và `settings.py` của từng service để biết cấu hình thực tế.
 
 ## API Endpoints
 
